@@ -1,0 +1,13 @@
+{
+  "name": "sricam-ap009-web-bootstrap",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+  }
+}
