@@ -54,6 +54,20 @@ You can build everything using the command `npm run build`. The resulting update
 
 ---
 
+### Installing:
+
+1. Either build the package using the instructions above, or download one of the pre-built update packages from the [releases](https://github.com/MitchTalmadge/Sricam-AP009-Web-Bootstrap/releases) page.
+
+2. Login to your Sricam web interface (usually on port 81, default username **admin** with no password)
+
+3. Go to the settings page, then to **Upgrade Device Firmware**.
+
+4. Upload the update package to the **Upgrade Device Embeded Web UI** field.
+
+This should be all. Refresh the page if needed.
+
+---
+
 ### Credit where it's due:
 
 These blog posts helped me get to where I am. I appreciate these peoples' hard work. 
