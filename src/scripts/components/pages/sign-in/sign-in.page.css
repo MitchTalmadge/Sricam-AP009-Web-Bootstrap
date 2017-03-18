@@ -1,0 +1,52 @@
+#background {
+    width: 100vw;
+    height: calc(100vh - 60px);
+    background: #eee url('../../../../resources/images/white_wall_bg.png');
+    padding-top: 100px;
+}
+
+#footer {
+    height: 60px;
+    background-color: #337ab7;
+}
+
+#sign-in-form {
+    max-width: 330px;
+    padding: 20px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.65);
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 #ddd;
+}
+
+#sign-in-form h2 {
+    margin-top: 0;
+    padding-top: 0;
+    margin-bottom: 20px;
+}
+
+#sign-in-form .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#sign-in-form .form-control:focus {
+    z-index: 2;
+}
+
+#sign-in-form #usernameInput {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#sign-in-form #passwordInput {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
