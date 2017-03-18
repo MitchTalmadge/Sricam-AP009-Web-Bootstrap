@@ -2,6 +2,8 @@
 
 **The Sricam AP009 Web interface, redesigned in Bootstrap**
 
+![Sricam AP009](http://i.imgur.com/b4Xaxw4.jpg)
+
 ---
 
 This project was created to turn the ugly web interface that comes standard on the _Sricam AP009_ into something more pleasing to work with. The package can be uploaded on the _"Upgrade Device Embeded Web UI"_ section of the web interface.
