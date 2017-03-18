@@ -20,21 +20,21 @@ Internally, the Sricam AP009 uses BusyBox linux and stores all web files in `/sy
 
 1. **Header (32 bytes):**
 
-    _wifi-camera-app-qazwsxedcrfvtgba_
+    `wifi-camera-app-qazwsxedcrfvtgba`
 
-2. **Zip File Size (4 bytes)**
+2. **Zip File Size (4 byte integer, _little endian_)**
 
 3. **Zip File**
 
-    * The zip file must contain all the files to place in `/system/www`. Any files in this zip will be accessible from the web.
+    * The zip file should contain a directory called `www` in which the web files reside. Any files in this directory will be accessible from the web.
+
+    * The contents of the zip file are extracted into `/system`. This can be exploited to replace non-web files, such as the firmware in `/system/system/bin` or the startup script in `/system/init`.
     
-    * The zip file must be password protected using this password: 
-        
-        _vstarcam!@#$%_
+    * Although the updater on the camera expects the zip file to be password protected using the password `vstarcam!@#$%`, it is not actually required, and the update works fine without it.  
     
 4. **Tail (32 bytes):**
 
-    _wifi-camera-end-yhnujmzaqxswcdef_
+    `wifi-camera-end-yhnujmzaqxswcdef`
     
 This repository uses npm to generate an update file from the contents of the repository's `www` directory.
 
@@ -77,3 +77,15 @@ The posts are a great read if you're interested to learn more about the innerwor
 http://blog.badtrace.com/post/sricam-ap003-by-sricctv/
 
 http://catdevzero.blogspot.com/2015/02/experiments-with-ip-camera-part-3.html
+
+https://jumpespjump.blogspot.co.uk/2015/09/how-i-hacked-my-ip-camera-and-found.html
+
+https://www.pentestpartners.com/blog/hacking-the-ip-camera-part-1
+
+https://www.pentestpartners.com/blog/hacking-the-aldi-ip-cctv-camera-part-2/
+
+---
+
+### Moral of the story:
+
+This camera is incredibly insecure and should not be in your home unless you _really_ know what you are doing.

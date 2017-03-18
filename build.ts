@@ -12,7 +12,6 @@ const finalUpdateFile = distDir + 'update.bin';
 const fs = require('fs');
 const rimraf = require('rimraf');
 const glob = require('glob');
-const concat = require('concat-stream');
 
 const Minizip = require('minizip-asm.js');
 let mz = new Minizip();
@@ -35,7 +34,7 @@ let files = glob.sync("www/**", {
 // For each of the files, add to the zip
 files.forEach(function (file) {
     console.log("\tAdding " + file);
-    mz.append(file, fs.readFileSync(file), {'password': password});
+    mz.append(file, fs.readFileSync(file));
 });
 
 
@@ -60,7 +59,7 @@ console.log("\tAppending Size");
 let updateSize = zipBuffer.length;
 console.log("\t - Size of zip: " + updateSize);
 let updateSizeBuffer = new Buffer(4);
-updateSizeBuffer.writeUInt32BE(updateSize, 0);
+updateSizeBuffer.writeUInt32LE(updateSize, 0);
 console.log("\t - Size as hex: " + updateSizeBuffer.toString('hex'));
 updateFileStream.write(updateSizeBuffer, "hex");
 
