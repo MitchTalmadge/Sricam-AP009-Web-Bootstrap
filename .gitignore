@@ -52,3 +52,5 @@ fabric.properties
 /www/
 /src/**/*.js
 /src/**/*.js.map
+/.awcache/
+build.js.map
