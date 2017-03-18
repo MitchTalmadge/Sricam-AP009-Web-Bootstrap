@@ -3,14 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node build.js"
+    "build": "tsc build.ts && node build.js"
   },
   "license": "GPL-3.0",
   "dependencies": {
+    "core-js": "^2.4.1",
     "concat-stream": "^1.6.0",
     "glob": "^7.1.1",
     "minizip-asm.js": "^1.0.10",
     "rimraf": "^2.6.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/core-js": "=0.9.36",
+    "@types/node": "=7.0.7",
+    "typescript": "^2.2.1"
+  }
 }

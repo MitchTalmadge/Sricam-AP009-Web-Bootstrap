@@ -48,3 +48,4 @@ fabric.properties
 /tmp/
 /dist/
 /npm-debug.log
+/build.js
