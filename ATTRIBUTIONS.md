@@ -14,3 +14,7 @@ https://github.com/rf00/minizip-asm.js/blob/master/LICENSE
 ### rimraf
 
 https://github.com/isaacs/rimraf/blob/master/LICENSE
+
+### concat-stream
+
+https://github.com/maxogden/concat-stream/blob/master/LICENSE
