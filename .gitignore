@@ -49,3 +49,6 @@ fabric.properties
 /dist/
 /npm-debug.log
 /build.js
+/www/
+/src/**/*.js
+/src/**/*.js.map

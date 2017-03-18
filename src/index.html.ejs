@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (C) 2016 AptiTekk, LLC. (https://AptiTekk.com/) - All Rights Reserved
+  ~ Unauthorized copying of any part of AptiBook, via any medium, is strictly prohibited.
+  ~ Proprietary and confidential.
+  -->
+
+<html>
+<head>
+    <title>AptiBook</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1"/>
+
+    <base href="/" />
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="<%= require('./resources/favicons/apple-touch-icon.png') %>">
+    <link rel="icon"
+          type="image/png"
+          href="<%= require('./resources/favicons/favicon-32x32.png') %>"
+          sizes="32x32">
+    <link rel="icon"
+          type="image/png"
+          href="<%= require('./resources/favicons/favicon-194x194.png') %>"
+          sizes="194x194">
+    <link rel="icon"
+          type="image/png"
+          href="<%= require('./resources/favicons/android-chrome-192x192.png') %>"
+          sizes="192x192">
+    <link rel="icon"
+          type="image/png"
+          href="<%= require('./resources/favicons/favicon-16x16.png') %>"
+          sizes="16x16">
+    <link rel="manifest"
+          href="<%= require('!file-loader?name=./resources/json/[hash].[ext]!./resources/favicons/manifest.json') %>">
+    <link rel="mask-icon"
+          href="<%= require('./resources/favicons/safari-pinned-tab.svg') %>"
+          color="#4272b7">
+    <meta name="theme-color"
+          content="#ffffff">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans|Roboto:300,400|Ubuntu"
+          rel="stylesheet">
+
+    <!--suppress CommaExpressionJS -->
+    <script type="text/javascript">
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-46481658-2', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+    <% //noinspection NodeModulesDependencies,JSUnresolvedVariable
+    if(htmlWebpackPlugin.options.dev) { %>
+    <!--suppress JSUnresolvedLibraryURL -->
+    <script src="http://localhost:9000/webpack-dev-server.js"></script>
+    <% } %>
+
+    <style type="text/css">
+        <%= require("!to-string-loader!css-loader!./resources/splashscreen/style.css") %>
+    </style>
+
+</head>
+<body>
+<app></app>
+
+<div id="splashscreen">
+    <div id="splashscreen-background">
+    </div>
+    <div id="splashscreen-color-overlay">
+    </div>
+    <div id="splashscreen-foreground">
+    </div>
+</div>
+</body>
+</html>
