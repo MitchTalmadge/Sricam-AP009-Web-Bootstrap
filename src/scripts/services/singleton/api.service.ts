@@ -9,19 +9,14 @@ import {Headers, Http, RequestOptions, Response} from "@angular/http";
 import {Observable} from "rxjs";
 
 @Injectable()
-export class APIService {
+export class HTTPService {
 
-    private apiUrl: string = "/";
     private headers: Headers = new Headers({
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     });
 
     constructor(private http: Http) {
-    }
-
-    public getApiUrlFromEndpoint(endpoint: string): string {
-        return this.apiUrl + APIService.removeTrailingSlash(endpoint);
     }
 
     private static checkForErrors(response: Response): any {
@@ -36,12 +31,6 @@ export class APIService {
         }
     }
 
-    private static removeTrailingSlash(path: string): string {
-        if (path && path.startsWith("/"))
-            path = path.substring(1);
-        return path;
-    }
-
     public get(path: string, additionalHeaders?: Headers): Observable<any> {
         let options;
         if (additionalHeaders) {
@@ -52,36 +41,36 @@ export class APIService {
             options = new RequestOptions({headers: newHeaders});
         }
         else options = new RequestOptions({headers: this.headers});
-        return this.http.get(`${this.apiUrl}${APIService.removeTrailingSlash(path)}`, options)
-            .map(APIService.checkForErrors)
+        return this.http.get(path, options)
+            .map(HTTPService.checkForErrors)
             .catch(e => Observable.throw(e.json().error));
     }
 
     public post(path: string, data: any): Observable<any> {
         let options = new RequestOptions({headers: this.headers});
-        return this.http.post(`${this.apiUrl}${APIService.removeTrailingSlash(path)}`, JSON.stringify(data), options)
-            .map(APIService.checkForErrors)
+        return this.http.post(path, JSON.stringify(data), options)
+            .map(HTTPService.checkForErrors)
             .catch(e => Observable.throw(e.json().error));
     }
 
     public put(path: string, data: any): Observable<any> {
         let options = new RequestOptions({headers: this.headers});
-        return this.http.put(`${this.apiUrl}${APIService.removeTrailingSlash(path)}`, JSON.stringify(data), options)
-            .map(APIService.checkForErrors)
+        return this.http.put(path, JSON.stringify(data), options)
+            .map(HTTPService.checkForErrors)
             .catch(e => Observable.throw(e.json().error));
     }
 
     public patch(path: string, data?: any): Observable<any> {
         let options = new RequestOptions({headers: this.headers});
-        return this.http.patch(`${this.apiUrl}${APIService.removeTrailingSlash(path)}`, data != null ? JSON.stringify(data) : undefined, options)
-            .map(APIService.checkForErrors)
+        return this.http.patch(path, data != null ? JSON.stringify(data) : undefined, options)
+            .map(HTTPService.checkForErrors)
             .catch(e => Observable.throw(e.json().error));
     }
 
     public del(path: string): Observable<any> {
         let options = new RequestOptions({headers: this.headers});
-        return this.http.delete(`${this.apiUrl}${APIService.removeTrailingSlash(path)}`, options)
-            .map(APIService.checkForErrors)
+        return this.http.delete(path, options)
+            .map(HTTPService.checkForErrors)
             .catch(e => Observable.throw(e.json().error));
     }
 

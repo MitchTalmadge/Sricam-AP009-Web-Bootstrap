@@ -18,7 +18,7 @@ config.output = {
 
 config.plugins.push(
     new HtmlWebpackPlugin({
-        template: path.join(__dirname, '../src/index.html.ejs'),
+        template: path.join(__dirname, '../src/app.htm.ejs'),
         favicon: path.join(__dirname, '../src/resources/favicons/favicon.ico'),
         filename: path.join(__dirname, '../www/index.html'),
         inject: 'body',

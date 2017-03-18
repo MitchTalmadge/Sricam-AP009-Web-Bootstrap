@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (C) 2016 AptiTekk, LLC. (https://AptiTekk.com/) - All Rights Reserved
+  ~ Unauthorized copying of any part of AptiBook, via any medium, is strictly prohibited.
+  ~ Proprietary and confidential.
+  -->
+
+<html>
+<head>
+    <title>IP Camera</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1"/>
+
+    <base href="/" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans|Roboto:300,400|Ubuntu"
+          rel="stylesheet">
+
+    <% //noinspection NodeModulesDependencies,JSUnresolvedVariable
+    if(htmlWebpackPlugin.options.dev) { %>
+    <!--suppress JSUnresolvedLibraryURL -->
+    <script src="http://localhost:9000/webpack-dev-server.js"></script>
+    <% } %>
+
+    <style type="text/css">
+        <%= require("!to-string-loader!css-loader!./resources/splashscreen/style.css") %>
+    </style>
+
+</head>
+<body>
+<app></app>
+
+<div id="splashscreen">
+    <div id="splashscreen-background">
+    </div>
+    <div id="splashscreen-color-overlay">
+    </div>
+    <div id="splashscreen-foreground">
+    </div>
+</div>
+</body>
+</html>
