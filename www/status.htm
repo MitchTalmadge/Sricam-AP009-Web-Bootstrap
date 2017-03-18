@@ -1,0 +1,424 @@
+﻿<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="get_factory_param.cgi"></script>
+<script src="get_record.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+
+function set_language(language)
+{
+top.language = $("#mode_sel").val();
+parent.location.reload();
+}
+
+function d1(msg)
+{
+$("#alarm_status_info").html("&nbsp;&nbsp;"+msg);
+}
+function d2(msg)
+{
+removeSelfClass();$("#ddns_status_info").html("&nbsp;&nbsp;"+msg);
+}	
+function d3(msg)
+{
+$("#upnp_status_info").html("&nbsp;&nbsp;"+msg);
+}	
+function d4(msg)
+{
+}	
+function sd(sdtotal){
+$("#sd_status_info").html("&nbsp;&nbsp;"+sdtotal+"MB");
+}
+function sd1(sdtotal){
+$("#sd_status_info1").html("&nbsp;&nbsp;"+sdtotal+"MB");
+}
+function sd2(sdstatus){
+$("#sd_status_info2").html("&nbsp;&nbsp;"+sdstatus);
+}
+function dnsstatus(status){
+$("#dns_status_info").html("&nbsp;&nbsp;"+status);
+}
+
+//function wpsstatus(status){
+//$("#wps_status_info").html("&nbsp;&nbsp;"+status);
+//}
+//function wifimodestatus(status){
+//$("#wifi_mode_status_info").html("&nbsp;&nbsp;"+status);
+//}
+function body_onload()
+{
+//setDocTitle( str_device + '(' + (alias=='')?str_anonymous:alias + ')');
+top.varRebootInfo = str_rebootinfo;
+
+if (alarm_status==1)	
+d1(str_motion_alarm);
+else if (alarm_status==2)
+d1(str_input_alarm);
+else
+d1(str_none);
+
+switch (dns_status)
+{
+case 0:
+dnsstatus(str_ddns_noaction);
+break;
+case 1:
+dnsstatus(str_ddns_waiting);
+break;
+case 2:
+dnsstatus(str_ddns_cannotconnect);
+break;
+case 3:
+url='http://'+ddns_host;
+if (location.port!='') url+=':'+location.port;
+dnsstatus(str_dyndns_ok+'&nbsp;&nbsp;'+url);
+break;
+case 4:
+dnsstatus(str_dyndns_sys_err);
+break;
+case 5:
+dnsstatus(str_dyndns_badauth);
+break;
+case 6:
+dnsstatus(str_dyndns_donator);
+break;
+case 7:
+dnsstatus(str_dyndns_notfqdn);
+break;
+case 8:
+dnsstatus(str_dyndns_nohost);
+break;
+case 9:
+dnsstatus(str_dyndns_yours);
+break;
+case 10:
+dnsstatus(str_dyndns_numhost);
+break;
+case 11:
+dnsstatus(str_dyndns_abuse);
+break;
+case 12:
+dnsstatus(str_dyndns_server_err);
+break;
+case 13:
+dnsstatus(str_dyndns_chat_err);
+break;
+case 14:
+dnsstatus(str_oray_chat_err);
+break;
+case 15:
+dnsstatus(str_oray_bad_auth);
+break;
+case 16:
+dnsstatus(str_oray_bad_host);
+break;
+case 17:
+url='';
+if (ddns_host!='')
+{
+url='&nbsp;&nbsp;'+'http://'+ddns_host;
+if (location.port!='') url=url+':'+location.port;
+}
+if (oray_type)
+dnsstatus(str_oray_professional_ok+url);
+else
+dnsstatus(str_oray_standard_ok+url);
+break;
+case 18:
+/*url='http://'+dns_host;
+if (location.port!='') url+=':'+location.port;
+dnsstatus(str_ddns_ok+'&nbsp;&nbsp;'+url);*/
+dnsstatus(str_ddns_ok);
+break;
+case 19:
+dnsstatus(str_ddns_failed);
+break;
+case 20:
+dnsstatus(str_yu_ddns_ok);
+break;
+case 21:
+dnsstatus(str_yu_ddns_failed);
+break;
+case 22:
+dnsstatus(str_easynx_ok);
+break;
+case 23:
+dnsstatus(str_easynx_noauth);
+break;
+case 24:
+dnsstatus(str_easynx_noid);
+break;
+case 25:
+dnsstatus(str_easynx_over);
+break;
+case 26:
+dnsstatus(str_easynx_iddisable);
+break;
+case 27:
+dnsstatus(str_easynx_errparam);
+break;
+case 28:
+dnsstatus(str_easynx_unknownerr);
+break;
+case 29:
+url='http://'+ddns_host;
+if (location.port!='') url+=':'+location.port;
+dnsstatus(str_3322_ok+'&nbsp;&nbsp;'+url);
+break;
+case 30:
+dnsstatus(str_3322_sys_err);
+break;
+case 31:
+dnsstatus(str_3322_badauth);
+break;
+case 32:
+dnsstatus(str_3322_donator);
+break;
+case 33:
+dnsstatus(str_3322_notfqdn);
+break;
+case 34:
+dnsstatus(str_3322_nohost);
+break;
+case 35:
+dnsstatus(str_3322_yours);
+break;
+case 36:
+dnsstatus(str_3322_numhost);
+break;
+case 37:
+dnsstatus(str_3322_abuse);
+break;
+case 38:
+dnsstatus(str_3322_server_err);
+break;
+case 39:
+dnsstatus(str_3322_chat_err);
+break;
+case 40:
+dnsstatus(str_9299_ok);
+break;
+case 41:
+dnsstatus(str_9299_er);
+break;
+case 42:
+dnsstatus(str_9299_da);
+break;
+case 43:
+dnsstatus(str_9299_sne);
+break;
+case 44:
+dnsstatus(str_9299_ne);
+break;
+case 45:
+dnsstatus(str_9299_chat_err);
+break;
+case 50:
+url='http://'+ddns_host;
+if (location.port!='') url+=':'+location.port;
+dnsstatus(str_smart_ok+'&nbsp;&nbsp;'+url);
+break;
+case 51:
+dnsstatus(str_smart_noauth);
+break;
+}
+
+if (upnp_status==0)
+d3(str_upnp_msg0);
+else if (upnp_status==1)
+d3(str_upnp_msg1);
+else if (upnp_status==2)
+d3(str_upnp_msg2);
+else if (upnp_status==3)
+d3(str_upnp_msg3);
+else if (upnp_status==4)
+d3(str_upnp_msg4);
+else if (upnp_status==5)
+d3(str_upnp_msg5);
+
+if(dev_had_sd)
+{
+    if(record_sd_status == 0) {$("#record_sd_info").html("&nbsp;&nbsp;"+str_sd_no);}
+	if(record_sd_status == 1) {$("#record_sd_info").html("&nbsp;&nbsp;"+str_sd_exist);}
+	if(record_sd_status == 2) {$("#record_sd_info").html("&nbsp;&nbsp;"+str_disk_2);}
+	$("#str_sd_sdtotal_td").html("&nbsp;&nbsp;"+sdtotal+"&nbsp;M");
+	$("#str_sd_sdfree_td").html("&nbsp;&nbsp;"+sdfree+"&nbsp;M");
+}
+	
+/*	if(externwifi == 0) 
+		$("#str_externwifi_td").html("&nbsp;&nbsp;"+str_externwifi_ok);	
+	else
+		$("#str_externwifi_td").html("&nbsp;&nbsp;"+str_externwifi_error);	*/
+}
+
+
+
+
+</script>
+</head>
+<body  onLoad="body_onload()">
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_devicestatus);</script> 
+</strong></td>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_sw_ver);</script></td>
+<td>&nbsp;&nbsp;<script>document.write(sys_ver);</script></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp;
+<script>document.write(str_aw_ver);</script></td>
+<td>&nbsp;&nbsp;17.0.0.03</td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_alias);</script></td>
+<td>&nbsp;&nbsp;<script>document.write(alias);</script></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_dev_id);</script></td>
+<td>&nbsp;&nbsp;<script>document.write(deviceid);</script></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_alarmstatus);</script></td>
+<td id="alarm_status_info">&nbsp;&nbsp;</td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_upnp_status);</script></td>
+<td id="upnp_status_info">&nbsp;&nbsp;</td>
+</tr>
+<tr style="display:none">
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_sd_status2);</script></td>
+<td id="sd_status_info2">&nbsp;&nbsp;</td>
+</tr>
+<tr style="display:none">
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_sd_status);</script></td>
+<td id="sd_status_info">&nbsp;&nbsp;</td>
+</tr>
+<tr style="display:none">
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_sd_status1);</script></td>
+<td id="sd_status_info1">&nbsp;&nbsp;</td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_ddns_status);</script></td>
+<td id="dns_status_info">&nbsp;&nbsp;</td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+MAC</td>
+<td>&nbsp;&nbsp;<script>document.write(mac);</script></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+WIFI MAC</td>
+<td>&nbsp;&nbsp;<script>document.write(wifimac);</script></td>
+</tr>
+
+
+   <tr style=" display:none">
+    <td class="bc2" id="tr____1">&nbsp;&nbsp;
+      <script>document.write(str_sd_sdtotal);</script></td>
+    <td id="str_sd_sdtotal_td">&nbsp;&nbsp;</td>
+  </tr>
+   <tr style=" display:none">
+    <td class="bc2" id="tr____1">&nbsp;&nbsp;
+      <script>document.write(str_sd_sdfree);</script></td>
+    <td id="str_sd_sdfree_td">&nbsp;&nbsp;</td>
+  </tr>
+  <tr style=" display:none">
+    <td class="bc2" id="tr____3">&nbsp;&nbsp;
+      <script>document.write(str_record_sd_status);</script></td>
+    <td><span id="record_sd_info"></span></td>
+  </tr>
+
+
+<tr>
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_la);</script></td>
+<td>
+    &nbsp;&nbsp;
+    <select id="mode_sel" onChange="javascript:set_language()">
+<option value="0">English</option>
+<option value="1">Spanish</option>
+<option value="2">Deutsch</option>
+<option value="3">French</option>
+<option value="4">Italian</option>
+<option value="5">Polski</option>
+<option value="6">한국의</option>
+<option value="7">简体中文</option>
+<option value="8">繁体中文</option>
+<option value="9">swedish</option>
+</select>
+</td>
+</tr>
+</table>
+<br>
+<table width="100%" >
+<tr>
+<td align="center"><button onClick="location.reload()"> 
+<script>document.write(str_refresh);</script> 
+</button></td>
+</tr>
+</table></td>
+</tr>
+</table>
+</body>
+</html><script>
+removeSelfClass();$("#dd-status", parent.document).addClass("selected");
+if (language=='')
+{$("#mode_sel").val(0);}
+else if(language==0)
+{$("#mode_sel").val(0);}
+else if(language==1)
+{$("#mode_sel").val(1);}
+else if(language==2)
+{$("#mode_sel").val(2);}
+else if(language==3)
+{$("#mode_sel").val(3);}
+else if(language==4)
+{$("#mode_sel").val(4);}
+else if(language==5)
+{$("#mode_sel").val(5);}
+else if(language==6)
+{$("#mode_sel").val(6);}
+else if(language==7)
+{$("#mode_sel").val(7);}
+else if(language==8)
+{$("#mode_sel").val(8);}
+else if(language==9)
+{$("#mode_sel").val(9);}
+else if(language==10)
+{$("#mode_sel").val(10);}
+else if(language==11)
+{$("#mode_sel").val(11);}
+else
+{$("#mode_sel").val(0);}
+
+if(!dev_had_sd)
+{
+	$("#tr____1").hide();
+	$("#tr____2").hide();
+	$("#tr____3").hide();
+}
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

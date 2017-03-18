@@ -1,0 +1,63 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="login.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function set_upnp()
+{
+var url;
+url='set_upnp.cgi?next_url=upnp.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&enable=';
+url+=($("#enable").attr("checked")=="checked")?1:0;
+location=url;
+}
+function body_onload()
+{
+$("#enable").attr("checked",upnp_enable?true:false);
+}
+</script>
+</head>
+<body onLoad="body_onload()">
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal"><table width="100%" class="summaryTable">
+<tr height="25">
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_upnp_config);</script> 
+</strong></td>
+</tr>
+<tr height="25">
+<td width="30%">&nbsp;&nbsp;
+<script>document.write(str_upnp_choice);</script></td>
+<td class="mid02">&nbsp;&nbsp;
+<input id="enable" type="checkbox"></td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_upnp()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd9", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

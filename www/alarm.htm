@@ -1,0 +1,430 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="obj.css" type="text/css">
+<script>
+var select_flag = 1;
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+
+function set_alarm()
+{
+var url;
+url='set_alarm.cgi?next_url=alarm.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&motion_armed='+(($("#motion_enable").attr("checked")=="checked")?1:0);
+url+='&input_armed='+(($("#extern_enable").attr("checked")=="checked")?1:0);
+url+='&motion_sensitivity='+(($("#motion_enable").attr("checked")=="checked")?$("#motion_sensitivity").val():5);
+url+='&iolinkage='+(($("#linkage_enable").attr("checked")=="checked")?1:0)
+url+='&mail='+(($("#mail_enable").attr("checked")=="checked")?1:0);
+url+='&record='+(($("#sdrec_enable").attr("checked")=="checked")?1:0);    //1.8
+url+='&ioin_level='+$("#triger_level").val();
+url+='&ioout_level='+$("#output_level").val();
+url+='&upload_interval='+((($("#ftp_enable").attr("checked")=="checked")&&($("#ftp_interval").val()!=''))?$("#ftp_interval").val():0);
+url+='&schedule_enable='+(($("#schedule_enable").attr("checked")=="checked")?1:0);
+url+='&schedule_sun_0='+make_schedule_val(0,0)+'&schedule_sun_1='+make_schedule_val(0,1)+'&schedule_sun_2='+make_schedule_val(0,2)+'&schedule_mon_0='+make_schedule_val(1,0)+'&schedule_mon_1='+make_schedule_val(1,1)+'&schedule_mon_2='+make_schedule_val(1,2)+'&schedule_tue_0='+make_schedule_val(2,0)+'&schedule_tue_1='+make_schedule_val(2,1)+'&schedule_tue_2='+make_schedule_val(2,2)+'&schedule_wed_0='+make_schedule_val(3,0)+'&schedule_wed_1='+make_schedule_val(3,1)+'&schedule_wed_2='+make_schedule_val(3,2)+'&schedule_thu_0='+make_schedule_val(4,0)+'&schedule_thu_1='+make_schedule_val(4,1)+'&schedule_thu_2='+make_schedule_val(4,2)+'&schedule_fri_0='+make_schedule_val(5,0)+'&schedule_fri_1='+make_schedule_val(5,1)+'&schedule_fri_2='+make_schedule_val(5,2)+'&schedule_sat_0='+make_schedule_val(6,0)+'&schedule_sat_1='+make_schedule_val(6,1)+'&schedule_sat_2='+make_schedule_val(6,2)+'&preset='+cbPreset.value;
+//alert(url);
+location=(url);
+}
+
+
+
+function show_alarm_actions()
+{
+if(($("#motion_enable").attr("checked")=="checked") || ($("#extern_enable").attr("checked")=="checked"))
+{
+($("#motion_enable").attr("checked")=="checked")?$("#tr_motion_sensitivity").show():$("#tr_motion_sensitivity").hide();
+($("#extern_enable").attr("checked")=="checked")?$("#tr_triger_level").show():$("#tr_triger_level").hide();
+($("#linkage_enable").attr("checked")=="checked")?$("#tr_output_level").show():$("#tr_output_level").hide();
+($("#ftp_enable").attr("checked")=="checked")?$("#tr_ftp_interval").show():$("#tr_ftp_interval").hide();
+
+$("#tr_mail_enable").show();
+$("#tr_linkage_enable").show();
+$("#tr_motion_preset").show();
+$("#tr_ftp_enable").show();
+$("#tr_sdrec_enable").show();
+$("#tr_schedule_enable").show();
+$("#tr_select_all").show();
+$("#tr_schedule").show();
+
+schedule_select()
+}
+else
+{
+$("#tr_motion_sensitivity").hide();
+$("#tr_mail_enable").hide();
+$("#tr_linkage_enable").hide();
+$("#tr_motion_preset").hide();
+$("#tr_ftp_enable").hide();
+$("#tr_ftp_interval").hide();
+$("#tr_sdrec_enable").hide();
+$("#tr_schedule_enable").hide();
+$("#tr_select_all").hide();
+$("#tr_schedule").hide();
+$("#tr_triger_level").hide();
+$("#tr_output_level").hide();
+}
+}
+
+function schedule_select()
+{
+($("#schedule_enable").attr("checked")=="checked")?$("#tr_schedule").show():$("#tr_schedule").hide();
+($("#schedule_enable").attr("checked")=="checked")?$("#tr_select_all").show():$("#tr_select_all").hide();
+}
+
+function parse_schedule_val(val,day,num)
+{
+id='schedule_'+day;
+num*=32;
+for(i=0;i<32;i++)
+{
+h=Math.floor(num/4);
+q=num%4;
+var schedule = id+'_'+h+'_'+q;
+
+if ((val>>i)&1)
+{
+$("#"+schedule).css("background-color","rgb(71, 145, 197)");
+}
+else
+{
+$("#"+schedule).css("background-color","");
+select_flag = 0;
+}
+
+
+num++;
+}
+}
+
+var ua = navigator.userAgent.toLowerCase();
+var isIE = ua.indexOf('msie') >= 0?true:false;
+function make_schedule_val(day,num)
+{
+if (!($("#schedule_enable").attr("checked")=="checked")) return 0;
+id='schedule_'+day;
+num*=32;
+val=0;
+for(i=0;i<32;i++)
+{
+h=Math.floor(num/4);
+q=num%4;
+var schedule = id+'_'+h+'_'+q;
+	
+if(isIE)
+val|=($("#"+schedule).css("background-color")!="rgb(71,145,197)")?0:(1<<i);
+else
+val|=($("#"+schedule).css("background-color")!='rgb(71, 145, 197)')?0:(1<<i);
+
+num++;
+}
+return val;
+}
+
+function SelectAll()
+{
+var mystatus = 0;
+if ($("#select_all").attr("checked")=="checked"){
+mystatus = 1;
+}
+
+for (i=0;i<7;i++)
+{
+for(j=0;j<24;j++)
+{
+for(m=0;m<4;m++)
+{
+var schedule = 'schedule_'+i+'_'+j+'_'+m;
+if (mystatus){
+$("#"+schedule).css("background-color","rgb(71, 145, 197)");
+}
+else{
+$("#"+schedule).css("background-color","");
+}
+}
+}
+}
+}
+
+function body_onload()
+{
+$("#cbPreset").val(alarm_presetsit);
+$("#motion_enable").attr("checked",alarm_motion_armed?true:false);
+$("#motion_sensitivity").val(alarm_motion_sensitivity);
+$("#extern_enable").attr("checked",alarm_input_armed?true:false);
+
+$("#triger_level").val(alarm_ioin_level);
+$("#mail_enable").attr("checked",alarm_mail?true:false);
+$("#linkage_enable").attr("checked",alarm_iolinkage?true:false);
+
+$("#output_level").val(alarm_ioout_level);
+$("#ftp_enable").attr("checked",(!alarm_upload_interval)?false:true);
+$("#ftp_interval").val(alarm_upload_interval);
+$("#schedule_enable").attr("checked",alarm_schedule_enable?true:false);
+$("#extern_enable").attr("checked",alarm_input_armed?true:false);
+
+$("#sdrec_enable").attr("checked",alarm_record?true:false);
+
+parse_schedule_val(alarm_schedule_sun_0,0,0);
+parse_schedule_val(alarm_schedule_sun_1,0,1);
+parse_schedule_val(alarm_schedule_sun_2,0,2);
+parse_schedule_val(alarm_schedule_mon_0,1,0);
+parse_schedule_val(alarm_schedule_mon_1,1,1);
+parse_schedule_val(alarm_schedule_mon_2,1,2);
+parse_schedule_val(alarm_schedule_tue_0,2,0);
+parse_schedule_val(alarm_schedule_tue_1,2,1);
+parse_schedule_val(alarm_schedule_tue_2,2,2);
+parse_schedule_val(alarm_schedule_wed_0,3,0);
+parse_schedule_val(alarm_schedule_wed_1,3,1);
+parse_schedule_val(alarm_schedule_wed_2,3,2);
+parse_schedule_val(alarm_schedule_thu_0,4,0);
+parse_schedule_val(alarm_schedule_thu_1,4,1);
+parse_schedule_val(alarm_schedule_thu_2,4,2);
+parse_schedule_val(alarm_schedule_fri_0,5,0);
+parse_schedule_val(alarm_schedule_fri_1,5,1);
+parse_schedule_val(alarm_schedule_fri_2,5,2);
+parse_schedule_val(alarm_schedule_sat_0,6,0);
+parse_schedule_val(alarm_schedule_sat_1,6,1);
+parse_schedule_val(alarm_schedule_sat_2,6,2);
+$("#select_all").attr("checked",select_flag?true:false);
+show_alarm_actions();
+}
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_alarm_config);</script> 
+</strong></td>
+</tr>
+<tr>
+<td width="30%">&nbsp;&nbsp;<script>document.write(str_motion_enable);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" id="motion_enable" onClick="show_alarm_actions()"></td>
+</tr>
+<tr id="tr_motion_sensitivity">
+<td>&nbsp;&nbsp;<script>document.write(str_motion_sensitivity);</script></td>
+<td>&nbsp;&nbsp;
+<select id="motion_sensitivity">
+<option value="10">10</option>
+<option value="9">9</option>
+<option value="8">8</option>
+<option value="7">7</option>
+<option value="6">6</option>
+<option value="5">5</option>
+<option value="4">4</option>
+<option value="3">3</option>
+<option value="2">2</option>
+<option value="1">1</option>
+</select>&nbsp;&nbsp;<script>document.write(str_alarm_Sensibility);</script></td>
+</tr>
+<tr>
+<td>&nbsp;&nbsp;<script>document.write(str_extern_enable);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" id="extern_enable" onClick="show_alarm_actions()" /></td>
+</tr>
+<tr id="tr_triger_level">
+<td>&nbsp;&nbsp;<script>document.write(str_triger_level);</script></td>
+<td>&nbsp;&nbsp;
+<select id="triger_level">
+<option value="0"> 
+<script>document.write(str_low);</script> 
+</option>
+<option value="1"> 
+<script>document.write(str_high);</script> 
+</option>
+</select></td>
+</tr>
+<tr>
+<td colspan="2" class="tCenter"><strong> 
+<script>document.write(str_alarm_x_1);</script> 
+</strong></td>
+</tr>
+<tr id="tr_motion_preset">
+<td>&nbsp;&nbsp;<script>document.write(str_motion_preset);</script></td>
+<td>&nbsp;&nbsp;
+<select id="cbPreset">
+<option value="0"> 
+<script>document.write(str_none);</script> 
+</option>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12">12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option value="16">16</option>
+</select></td>
+</tr>
+<tr id="tr_linkage_enable">
+<td>&nbsp;&nbsp;<script>document.write(str_alarm_linkage_enable);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" id="linkage_enable" onClick="show_alarm_actions()"></td>
+</tr>
+<tr id="tr_output_level">
+<td>&nbsp;&nbsp;<script>document.write(str_output_level);</script></td>
+<td>&nbsp;&nbsp;
+<select id="output_level">
+<option value="0"> 
+<script>document.write(str_low);</script> 
+</option>
+<option value="1"> 
+<script>document.write(str_high);</script> 
+</option>
+</select></td>
+</tr>
+<tr id="tr_mail_enable">
+<td>&nbsp;&nbsp;<script>document.write(str_alarm_mail_enable);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" id="mail_enable"></td>
+</tr>
+<tr id="tr_ftp_enable">
+<td>&nbsp;&nbsp;<script>document.write(str_alarm_ftp_enable);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" id="ftp_enable" onClick="show_alarm_actions()"></td>
+</tr>
+  <tr id="tr_ftp_interval">
+  <td>&nbsp;&nbsp;<script>document.write(str_ftp_upload_interval);</script>
+  </td>
+  <td>&nbsp;&nbsp;
+  <input id="ftp_interval" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+  </td>
+  </tr>
+<tr id="tr_record_enable" style="display:none">
+<td>&nbsp;&nbsp;<script>document.write(str_alarm_x_rec);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" id="record_enable"></td>
+</tr>
+<tr id="tr_snapshot_enable" style="display:none">
+<td>&nbsp;&nbsp;<script>document.write(str_alarm_x_anap);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" id="snapshot_enable"></td>
+</tr>
+<tr>
+<td colspan="2" class="tCenter"><strong> 
+<script>document.write(str_alarm_x_2);</script> 
+</strong></td>
+</tr>
+<tr id="tr_schedule_enable">
+<td>&nbsp;&nbsp;<script>document.write(str_schedule);</script></td>
+<td>&nbsp;&nbsp;
+<input id="schedule_enable" type="checkbox" onClick="schedule_select()"></td>
+</tr>
+<tr id="tr_select_all">
+<td>&nbsp;&nbsp;<script>document.write(str_select_all);</script></td>
+<td>&nbsp;&nbsp;
+<input id="select_all" type="checkbox" onClick="SelectAll()"></td>
+</tr>
+<tr id="tr_schedule">
+<td  colspan="2"><table class="selectTable" width="100%" border=1>
+<tr> 
+
+<script>
+document.write('<td>'+str_day+'<\/td>');
+for(i=0;i<24;i++) document.write('<td colspan=4>'+i+'<\/td>');
+</script> 
+</tr>
+<script>
+var str_day=new Array();
+str_day[0]=str_sun;
+str_day[1]=str_mon;
+str_day[2]=str_tue;
+str_day[3]=str_wed;
+str_day[4]=str_thu;
+str_day[5]=str_fri;
+str_day[6]=str_sat;
+
+function set_schedule(id,dbl)
+{
+var id_head=id.substring(0,id.lastIndexOf('_'));
+var ua = navigator.userAgent.toLowerCase();
+var isIE = ua.indexOf('msie') >= 0?true:false;
+
+if (( $("#"+id).css("background-color") =='rgb(71,145,197)' )||( $("#"+id).css("background-color") =='rgb(71, 145, 197)' ))
+{
+//alert($("#"+id).css("background-color"));
+if (dbl)
+{
+for (i=0;i<4;i++)
+{
+//alert("1111");
+var schedule=id_head+'_'+i;
+if(isIE)
+$("#"+schedule).css("background-color","rgb(71, 145, 197)");
+else
+$("#"+schedule).css("background-color","");
+}
+}
+else{
+$("#"+id).css("background-color","");
+}
+
+}	
+else
+{
+//alert($("#"+id).css("background-color"));
+if (dbl==1)
+{
+for (i=0;i<4;i++)
+{
+//alert("2222");
+var schedule=id_head+'_'+i;
+if(isIE)
+$("#"+schedule).css("background-color","");
+else
+$("#"+schedule).css("background-color","rgb(71, 145, 197)");
+}
+}
+else{
+//alert($("#"+id).css("background-color"));
+$("#"+id).css("background-color","rgb(71, 145, 197)");
+}
+}
+}
+for (i=0;i<7;i++)
+{
+document.write('<tr><td width=60>'+str_day[i]+'<\/td>');
+for(j=0;j<24;j++) for(m=0;m<4;m++)document.write('<td onclick=\"set_schedule(id,0)\" ondblclick=\"set_schedule(id,1)\"  width=4 id=\"schedule_'+i+'_'+j+'_'+m+'\"> <\/td>');
+document.write('<\/tr>');
+} 
+</script>
+</table></td>
+</tr>
+<tr style="display:none" id="tr_sdrec_enable" height="25"><td class="md4">&nbsp;&nbsp;<script type="text/javascript">document.write(str_sd_ftp)</script></td><td class="md2">&nbsp;&nbsp;<input type="checkbox" id="sdrec_enable"></td></tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_alarm()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-alarm", parent.document).addClass("selected");
+if(top.cookiepri != 255)
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

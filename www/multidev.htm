@@ -1,0 +1,765 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+var current_device=0;
+var alias_list=new Array();
+var host_list=new Array();
+
+var port_list=new Array();
+var same_subnet_list=new Array();
+function set_multidevice()
+{
+var url;
+
+url='set_devices.cgi?next_url=multidev.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+
+url+='&dev2_host='+encodeURIComponent(dev2_host)+'&dev2_alias='+encodeURIComponent(dev2_alias)+'&dev2_port='+dev2_port+'&dev2_user='+encodeURIComponent(dev2_user)+'&dev2_pwd='+encodeURIComponent(dev2_pwd);
+url+='&dev3_host='+encodeURIComponent(dev3_host)+'&dev3_alias='+encodeURIComponent(dev3_alias)+'&dev3_port='+dev3_port+'&dev3_user='+encodeURIComponent(dev3_user)+'&dev3_pwd='+encodeURIComponent(dev3_pwd);
+url+='&dev4_host='+encodeURIComponent(dev4_host)+'&dev4_alias='+encodeURIComponent(dev4_alias)+'&dev4_port='+dev4_port+'&dev4_user='+encodeURIComponent(dev4_user)+'&dev4_pwd='+encodeURIComponent(dev4_pwd);
+url+='&dev5_host='+encodeURIComponent(dev5_host)+'&dev5_alias='+encodeURIComponent(dev5_alias)+'&dev5_port='+dev5_port+'&dev5_user='+encodeURIComponent(dev5_user)+'&dev5_pwd='+encodeURIComponent(dev5_pwd);
+url+='&dev6_host='+encodeURIComponent(dev6_host)+'&dev6_alias='+encodeURIComponent(dev6_alias)+'&dev6_port='+dev6_port+'&dev6_user='+encodeURIComponent(dev6_user)+'&dev6_pwd='+encodeURIComponent(dev6_pwd);
+url+='&dev7_host='+encodeURIComponent(dev7_host)+'&dev7_alias='+encodeURIComponent(dev7_alias)+'&dev7_port='+dev7_port+'&dev7_user='+encodeURIComponent(dev7_user)+'&dev7_pwd='+encodeURIComponent(dev7_pwd);
+url+='&dev8_host='+encodeURIComponent(dev8_host)+'&dev8_alias='+encodeURIComponent(dev8_alias)+'&dev8_port='+dev8_port+'&dev8_user='+encodeURIComponent(dev8_user)+'&dev8_pwd='+encodeURIComponent(dev8_pwd);
+url+='&dev9_host='+encodeURIComponent(dev9_host)+'&dev9_alias='+encodeURIComponent(dev9_alias)+'&dev9_port='+dev9_port+'&dev9_user='+encodeURIComponent(dev9_user)+'&dev9_pwd='+encodeURIComponent(dev9_pwd);
+
+
+//alert(url);
+location=(url);
+}
+
+
+// ------------------- search click start-------------------//
+function ipcam_OnCameraSearched(status,alias,host,port,cmdport,dataport,same_subnet) 
+{
+//alert(host);
+if (status!=0)
+return;
+index=device_list.options.length;
+if (alias!='')
+alias_list[index]=alias;
+else
+alias_list[index]=str_anonymous;
+host_list[index]=host;
+
+port_list[index]=port;
+same_subnet_list[index]=same_subnet;
+
+oOption=document.createElement("OPTION");
+device_list.options.add(oOption);
+if (same_subnet)
+{
+oOption.innerText=alias_list[index]+'('+host_list[index]+')';
+}
+else
+{
+oOption.style.color='gray';
+oOption.innerText=alias_list[index]+'('+str_subnet_nomatch+')';
+}
+}
+function device_list_onclick()
+{
+if (device_list.options.length>0)
+{
+var alias1 = "device"+current_device+"_alias";
+var host = "device"+current_device+"_host";
+var cmdport = "device"+current_device+"_port";
+
+
+
+$("#"+alias1).val(alias_list[$('#device_list')[0].selectedIndex]);
+$("#"+host).val(host_list[$('#device_list')[0].selectedIndex]);
+$("#"+cmdport).val(port_list[$('#device_list')[0].selectedIndex]);				
+}
+}
+// ------------------- search click end-------------------//
+
+// ------------------- 显示/隐藏 编辑区域 start-------------------//
+function hide_alldevice_options()
+{
+
+for(i=1;i<9;i++)
+{
+var alias1 = "tr_device"+i+"_alias";
+var host = "tr_device"+i+"_host";
+var cmdport = "tr_device"+i+"_port";
+var user = "tr_device"+i+"_user";
+var pwd = "tr_device"+i+"_pwd";
+var set = "tr_device"+i+"_set";
+
+$("#"+alias1).hide();
+$("#"+host).hide();
+$("#"+cmdport).hide();
+$("#"+user).hide();
+$("#"+pwd).hide();
+$("#"+set).hide();
+}
+}
+function show_device_options(num)
+{
+
+hide_alldevice_options();
+
+var i = num-1;
+var alias1 = "tr_device"+i+"_alias";
+var host = "tr_device"+i+"_host";
+var cmdport = "tr_device"+i+"_port";
+var user = "tr_device"+i+"_user";
+var pwd = "tr_device"+i+"_pwd";
+var set = "tr_device"+i+"_set";
+//alert(alias1);
+
+
+
+$("#"+alias1).show();
+$("#"+host).show();
+$("#"+cmdport).show();
+$("#"+user).show();
+$("#"+pwd).show();
+$("#"+set).show();
+
+
+current_device=i;
+}
+function set_2nd_device(){
+show_device_options(2);
+}
+function set_3rd_device(){
+show_device_options(3);
+}
+function set_4th_device(){
+show_device_options(4);
+}
+function set_5th_device(){
+show_device_options(5);
+}
+function set_6th_device(){
+show_device_options(6);
+}
+function set_7th_device(){
+show_device_options(7);
+}
+function set_8th_device(){
+show_device_options(8);
+}
+function set_9th_device(){
+show_device_options(9);
+}
+// ------------------- 显示/隐藏 编辑区域 end-------------------//
+
+
+
+// ------------------- set/del start-------------------//
+function del_device(num)
+{
+var i = num;
+
+var alias1 = "device"+i+"_alias";
+var host = "device"+i+"_host";
+var cmdport = "device"+i+"_port";
+var user = "device"+i+"_user";
+var pwd = "device"+i+"_pwd";
+
+
+$("#"+alias1).val("");
+$("#"+host).val("");
+$("#"+cmdport).val("");
+$("#"+user).val("");
+$("#"+pwd).val("");
+
+
+i = num+1;
+
+
+if(2 == i){
+dev2_host='';dev2_alias='';dev2_port=0;dev2_user='';dev2_pwd='';
+}
+if(3 == i){
+dev3_host='';dev2_alias='';dev3_port=0;dev3_user='';dev3_pwd='';
+}
+if(4 == i){
+dev4_host='';dev4_alias='';dev4_port=0;dev4_user='';dev4_pwd='';
+}
+if(5 == i){
+dev5_host='';dev5_alias='';dev5_port=0;dev5_user='';dev5_pwd='';
+}
+if(6 == i){
+dev6_host='';dev6_alias='';dev6_port=0;dev6_user='';dev6_pwd='';
+}
+if(7 == i){
+dev7_host='';dev7_alias='';dev7_port=0;dev7_user='';dev7_pwd='';
+}
+if(8 == i){
+dev8_host='';dev8_alias='';dev8_port=0;dev8_user='';dev8_pwd='';
+}
+if(9 == i){
+dev9_host='';dev9_alias='';dev9_port=0;dev9_user='';dev9_pwd='';
+}
+
+
+
+var td_device = "td_"+i+"_device";
+$("#"+td_device).html( "&nbsp;&nbsp;"+str_none);
+}
+
+function set_device(num)
+{
+var i = num;
+
+var alias1 = "device"+i+"_alias";
+var host = "device"+i+"_host";
+var cmdport = "device"+i+"_port";
+var user = "device"+i+"_user";
+var pwd = "device"+i+"_pwd";
+
+if (($("#"+host).val()==''))
+{
+	alert(str_not_null);
+	$("#"+host).focus();
+	return;
+}
+if (($("#"+cmdport).val()==''))
+{
+	alert(str_not_null);
+	$("#"+cmdport).focus();
+	return;
+}
+if(($("#"+cmdport).val()<1) || ($("#"+cmdport).val()>65535))
+{
+	alert(str_port_range);
+	$("#"+cmdport).focus();
+	$("#"+cmdport).select();
+	return;
+}
+
+if (($("#"+user).val()==''))
+{
+	alert(str_not_null);
+	$("#"+user).focus();
+return;
+}
+
+
+if ($("#"+alias1).val()=='')	
+$("#"+alias1).val(str_anonymous);
+
+
+i = num+1;
+
+if(2 == i){
+dev2_host=$("#"+host).val();dev2_alias=$("#"+alias1).val();dev2_port=$("#"+cmdport).val();dev2_user=$("#"+user).val();dev2_pwd=$("#"+pwd).val();
+}
+if(3 == i){
+dev3_host=$("#"+host).val();dev3_alias=$("#"+alias1).val();dev3_port=$("#"+cmdport).val();dev3_user=$("#"+user).val();dev3_pwd=$("#"+pwd).val();
+}
+if(4 == i){
+dev4_host=$("#"+host).val();dev4_alias=$("#"+alias1).val();dev4_port=$("#"+cmdport).val();dev4_user=$("#"+user).val();dev4_pwd=$("#"+pwd).val();
+}
+if(5 == i){
+dev5_host=$("#"+host).val();dev5_alias=$("#"+alias1).val();dev5_port=$("#"+cmdport).val();dev5_user=$("#"+user).val();dev5_pwd=$("#"+pwd).val();
+}
+if(6 == i){
+dev6_host=$("#"+host).val();dev6_alias=$("#"+alias1).val();dev6_port=$("#"+cmdport).val();dev6_user=$("#"+user).val();dev6_pwd=$("#"+pwd).val();
+}
+if(7 == i){
+dev7_host=$("#"+host).val();dev7_alias=$("#"+alias1).val();dev7_port=$("#"+cmdport).val();dev7_user=$("#"+user).val();dev7_pwd=$("#"+pwd).val();
+}
+if(8 == i){
+dev8_host=$("#"+host).val();dev8_alias=$("#"+alias1).val();dev8_port=$("#"+cmdport).val();dev8_user=$("#"+user).val();dev8_pwd=$("#"+pwd).val();
+}
+if(9 == i){
+dev9_host=$("#"+host).val();dev9_alias=$("#"+alias1).val();dev9_port=$("#"+cmdport).val();dev9_user=$("#"+user).val();dev9_pwd=$("#"+pwd).val();
+}
+
+
+var td_device = "td_"+i+"_device";
+$("#"+td_device).html( "&nbsp;&nbsp;"+$("#"+alias1).val()+'('+$("#"+host).val()+')');
+}
+// ------------------- set/del end-------------------//
+
+
+
+
+function body_onload()
+{
+for (i=device_list.options.length-1;i>=0;--i) device_list.options.remove(i);
+
+//2
+$("#device1_alias").val((dev2_alias));
+$("#device1_host").val(dev2_host);
+$("#device1_port").val(dev2_port);
+$("#device1_user").val(dev2_user);
+$("#device1_pwd").val(dev2_pwd);
+$("#td_2_device").html( ($("#device1_host").val()=='')?"&nbsp;&nbsp;"+str_none:"&nbsp;&nbsp;"+$("#device1_alias").val()+'('+$("#device1_host").val()+')');
+//3
+$("#device2_alias").val((dev3_alias));
+$("#device2_host").val(dev3_host);
+$("#device2_port").val(dev3_port);
+$("#device2_user").val(dev3_user);
+$("#device2_pwd").val(dev3_pwd);
+$("#td_3_device").html( ($("#device2_host").val()=='')?"&nbsp;&nbsp;"+str_none:"&nbsp;&nbsp;"+$("#device2_alias").val()+'('+$("#device2_host").val()+')');
+//3
+$("#device3_alias").val((dev4_alias));
+$("#device3_host").val(dev4_host);
+$("#device3_port").val(dev4_port);
+$("#device3_user").val(dev4_user);
+$("#device3_pwd").val(dev4_pwd);
+$("#td_4_device").html( ($("#device3_host").val()=='')?"&nbsp;&nbsp;"+str_none:"&nbsp;&nbsp;"+$("#device3_alias").val()+'('+$("#device3_host").val()+')');
+//4
+$("#device4_alias").val((dev5_alias));
+$("#device4_host").val(dev5_host);
+$("#device4_port").val(dev5_port);
+$("#device4_user").val(dev5_user);
+$("#device4_pwd").val(dev5_pwd);
+$("#td_5_device").html( ($("#device4_host").val()=='')?"&nbsp;&nbsp;"+str_none:"&nbsp;&nbsp;"+$("#device4_alias").val()+'('+$("#device4_host").val()+')');
+//5
+$("#device5_alias").val((dev6_alias));
+$("#device5_host").val(dev6_host);
+$("#device5_port").val(dev6_port);
+$("#device5_user").val(dev6_user);
+$("#device5_pwd").val(dev6_pwd);
+$("#td_6_device").html( ($("#device5_host").val()=='')?"&nbsp;&nbsp;"+str_none:"&nbsp;&nbsp;"+$("#device5_alias").val()+'('+$("#device5_host").val()+')');
+//2
+$("#device6_alias").val((dev7_alias));
+$("#device6_host").val(dev7_host);
+$("#device6_port").val(dev7_port);
+$("#device6_user").val(dev7_user);
+$("#device6_pwd").val(dev7_pwd);
+$("#td_7_device").html( ($("#device6_host").val()=='')?"&nbsp;&nbsp;"+str_none:"&nbsp;&nbsp;"+$("#device6_alias").val()+'('+$("#device6_host").val()+')');
+//7
+$("#device7_alias").val((dev8_alias));
+$("#device7_host").val(dev8_host);
+$("#device7_port").val(dev8_port);
+$("#device7_user").val(dev8_user);
+$("#device7_pwd").val(dev8_pwd);
+$("#td_8_device").html( ($("#device7_host").val()=='')?"&nbsp;&nbsp;"+str_none:"&nbsp;&nbsp;"+$("#device7_alias").val()+'('+$("#device7_host").val()+')');
+//8
+$("#device8_alias").val((dev9_alias));
+$("#device8_host").val(dev9_host);
+$("#device8_port").val(dev9_port);
+$("#device8_user").val(dev9_user);
+$("#device8_pwd").val(dev9_pwd);
+$("#td_9_device").html( ($("#device8_host").val()=='')?"&nbsp;&nbsp;"+str_none:"&nbsp;&nbsp;"+$("#device8_alias").val()+'('+$("#device8_host").val()+')');
+}
+
+</script>
+<SCRIPT FOR="camsearch" EVENT="OnCameraSearched(status,alias,host,port,cmdport,dataport,same_subnet)">ipcam_OnCameraSearched(status,alias,host,port,cmdport,dataport,same_subnet)</SCRIPT>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    <td class="normal"><table width="100%" class="summaryTable">
+        <tr>
+          <td colspan="2" class="TitleBgcolor"><strong>&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_multidevice_config);</script> 
+            </strong></td>
+        </tr>
+        <!-- 搜索列表 -->
+        <tr id = "search_tr" height="75">
+          <td width="30%" class="bc2"><script>document.write(str_devicelist_inlan);</script></td>
+          <td><SELECT id="device_list" style="width:100%;" size="4" class="s5" onclick="device_list_onclick()">
+            </SELECT>
+            &nbsp;&nbsp;
+            <button onClick="for (i=device_list.options.length-1;i>=0;--i) device_list.options.remove(i);camsearch.OnSearchCameras();"><script>document.write(str_refresh);</script> 
+            </button></td>
+        </tr>
+        <!-- 本机 -->
+        <tr>
+          <td width="30%" class="bc2">&nbsp;&nbsp;<script>document.write(str_1st_device);</script></td>
+          <td>&nbsp;&nbsp;<script>document.write(str_this_device);</script></td>
+        </tr>
+        
+        <!-- 第二路设�?-->
+        <tr>
+          <td class="bc2">&nbsp;&nbsp;<a href="javascript:set_2nd_device();"><script>document.write(str_2nd_device);</script> 
+            </a></td>
+          <td><div id="td_2_device">&nbsp;&nbsp;<script>document.write(str_none);</script></div></td>
+        </tr>
+        <tr id="tr_device1_alias" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_alias);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;<input id="device1_alias" maxlength="20"></td>
+        </tr>
+        <tr id="tr_device1_host" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_host);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device1_host" maxlength="64"></td>
+        </tr>
+        <tr id="tr_device1_port" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_port);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device1_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+        </tr>
+        <tr id="tr_device1_user" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_user);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device1_user" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device1_pwd" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_pwd);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device1_pwd" type="password" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device1_set" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+            <button onClick="set_device(1)"><script>document.write(str_add);</script> 
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onClick="del_device(1)"><script>document.write(str_remove);</script> 
+            </button></td>
+        </tr>
+        <tr>
+          <td class="bc2">&nbsp;&nbsp;<a href="javascript:set_3rd_device()"><script>document.write(str_3rd_device);</script> 
+            </a></td>
+          <td><div id="td_3_device">&nbsp;&nbsp;<script>document.write(str_none);</script></div></td>
+        </tr>
+        <tr id="tr_device2_alias" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_alias);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device2_alias" maxlength="20"></td>
+        </tr>
+        <tr id="tr_device2_host" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_host);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device2_host" maxlength="64"></td>
+        </tr>
+        <tr id="tr_device2_port" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_port);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device2_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+        </tr>
+        <tr id="tr_device2_user" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_user);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device2_user" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device2_pwd" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_pwd);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device2_pwd" type="password" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device2_set" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+            <button onClick="set_device(2)"><script>document.write(str_add);</script> 
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onClick="del_device(2)"><script>document.write(str_remove);</script> 
+            </button></td>
+        </tr>
+        <tr>
+          <td class="bc2">&nbsp;&nbsp;<a href="javascript:set_4th_device()"><script>document.write(str_4th_device);</script> 
+            </a></td>
+          <td><div id="td_4_device">&nbsp;&nbsp;<script>document.write(str_none);</script></div></td>
+        </tr>
+        <tr id="tr_device3_alias" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_alias);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device3_alias" maxlength="20"></td>
+        </tr>
+        <tr id="tr_device3_host" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_host);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device3_host" maxlength="64"></td>
+        </tr>
+        <tr id="tr_device3_port" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_port);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device3_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+        </tr>
+        <tr id="tr_device3_user" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_user);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device3_user" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device3_pwd" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_pwd);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device3_pwd" type="password" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device3_set" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+            <button onClick="set_device(3)"><script>document.write(str_add);</script> 
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onClick="del_device(3)"><script>document.write(str_remove);</script> 
+            </button></td>
+        </tr>
+        <tr>
+          <td class="bc2">&nbsp;&nbsp;<a href="javascript:set_5th_device()"><script>document.write(str_5th_device);</script> 
+            </a></td>
+          <td><div id="td_5_device">&nbsp;&nbsp;<script>document.write(str_none);</script></div></td>
+        </tr>
+        <tr id="tr_device4_alias" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_alias);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device4_alias" maxlength="20"></td>
+        </tr>
+        <tr id="tr_device4_host" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_host);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device4_host" maxlength="64"></td>
+        </tr>
+        <tr id="tr_device4_port" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_port);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device4_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+        </tr>
+        <tr id="tr_device4_user" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_user);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device4_user" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device4_pwd" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_pwd);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device4_pwd" type="password" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device4_set" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+            <button onClick="set_device(4)"><script>document.write(str_add);</script> 
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onClick="del_device(4)"><script>document.write(str_remove);</script> 
+            </button></td>
+        </tr>
+        <tr>
+          <td class="bc2">&nbsp;&nbsp;<a href="javascript:set_6th_device()"><script>document.write(str_6th_device);</script> 
+            </a></td>
+          <td><div id="td_6_device">&nbsp;&nbsp;<script>document.write(str_none);</script></div></td>
+        </tr>
+        <tr id="tr_device5_alias" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_alias);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device5_alias" maxlength="20"></td>
+        </tr>
+        <tr id="tr_device5_host" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_host);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device5_host" maxlength="64"></td>
+        </tr>
+        <tr id="tr_device5_port" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_port);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device5_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+        </tr>
+        <tr id="tr_device5_user" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_user);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device5_user" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device5_pwd" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_pwd);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device5_pwd" type="password" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device5_set" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+            <button onClick="set_device(5)"><script>document.write(str_add);</script> 
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onClick="del_device(5)"><script>document.write(str_remove);</script> 
+            </button></td>
+        </tr>
+        <tr>
+          <td class="bc2">&nbsp;&nbsp;<a href="javascript:set_7th_device()"><script>document.write(str_7th_device);</script> 
+            </a></td>
+          <td><div id="td_7_device">&nbsp;&nbsp;<script>document.write(str_none);</script></div></td>
+        </tr>
+        <tr id="tr_device6_alias" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_alias);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device6_alias" maxlength="20"></td>
+        </tr>
+        <tr id="tr_device6_host" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_host);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device6_host" maxlength="64"></td>
+        </tr>
+        <tr id="tr_device6_port" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_port);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device6_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+        </tr>
+        <tr id="tr_device6_user" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_user);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device6_user" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device6_pwd" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_pwd);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device6_pwd" type="password" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device6_set" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+            <button onClick="set_device(6)"><script>document.write(str_add);</script> 
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onClick="del_device(6)"><script>document.write(str_remove);</script> 
+            </button></td>
+        </tr>
+        <tr>
+          <td class="bc2">&nbsp;&nbsp;<a href="javascript:set_8th_device()"><script>document.write(str_8th_device);</script> 
+            </a></td>
+          <td><div id="td_8_device">&nbsp;&nbsp;<script>document.write(str_none);</script></div></td>
+        </tr>
+        <tr id="tr_device7_alias" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_alias);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device7_alias" maxlength="20"></td>
+        </tr>
+        <tr id="tr_device7_host" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_host);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device7_host" maxlength="64"></td>
+        </tr>
+        <tr id="tr_device7_port" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_port);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device7_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+        </tr>
+        <tr id="tr_device7_user" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_user);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device7_user" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device7_pwd" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_pwd);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device7_pwd" type="password" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device7_set" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+            <button onClick="set_device(7)"><script>document.write(str_add);</script> 
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onClick="del_device(7)"><script>document.write(str_remove);</script> 
+            </button></td>
+        </tr>
+        <tr>
+          <td class="bc2">&nbsp;&nbsp;<a href="javascript:set_9th_device()"><script>document.write(str_9th_device);</script> 
+            </a></td>
+          <td><div id="td_9_device">&nbsp;&nbsp;<script>document.write(str_none);</script></div></td>
+        </tr>
+        <tr id="tr_device8_alias" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_alias);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device8_alias" maxlength="20"></td>
+        </tr>
+        <tr id="tr_device8_host" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_host);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device8_host" maxlength="64"></td>
+        </tr>
+        <tr id="tr_device8_port" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_port);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device8_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+        </tr>
+        <tr id="tr_device8_user" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_user);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device8_user" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device8_pwd" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_pwd);</script> 
+            &nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+          <input id="device8_pwd" type="password" maxlength="12"></td>
+        </tr>
+        <tr id="tr_device8_set" style="display:none">
+          <td class="bc2" >&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;
+            <button onClick="set_device(8)"><script>document.write(str_add);</script> 
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onClick="del_device(8)"> 
+            <script>document.write(str_remove);</script></button></td>
+        </tr>
+        <tr>
+          <td class="tCenter" colspan="2">&nbsp;&nbsp;<span>&nbsp;&nbsp;&nbsp;&nbsp;<script>document.write(str_multidevice_attention);</script> 
+            </span>&nbsp;&nbsp;</td>
+        </tr>
+      </table>
+      <br>
+      <div class="sendbtnstyle">
+        <button id="set" onClick="set_multidevice()"><script>document.write(str_set);</script> </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="reload" onClick="location.reload()"><script>document.write(str_refresh);</script> </button>
+      </div></td>
+  </tr>
+</table>
+<OBJECT id="camsearch" width="0" height="0" classid="clsid:91D47772-CF16-44B1-95C0-AE6C91284640">
+</OBJECT>
+<script>
+var ua = navigator.userAgent.toLowerCase();
+var isIE = ua.indexOf('msie') >= 0?true:false;
+if(isIE)
+$("#search_tr").show();
+else
+$("#search_tr").hide();
+
+removeSelfClass();$("#dd-multidev", parent.document).addClass("selected");
+
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+</body>
+</html>
+<script type="text/javascript" src="rowscolor.js"></script>

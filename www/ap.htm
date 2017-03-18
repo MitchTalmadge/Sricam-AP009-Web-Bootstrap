@@ -1,0 +1,71 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="get_status.cgi"></script>
+<script src="get_syswifi.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<title></title>
+<link rel="stylesheet" href="obj.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function set_ap()
+{
+//if($("#ssid").val()=='')
+//{
+//	alert(str_not_null);
+//	$("#ssid").focus();
+//	return;
+//}
+
+if (!confirm(str_wifi_mode_x_1))
+return
+	
+var url;
+url='set_syswifi.cgi?next_url=rebootme.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&syswifi_ssid='+$("#ssid").val();
+location=url;
+}
+function body_onload()
+{
+$("#ssid").val(syswifi_ssid);
+}
+</script>
+</head>
+<body onLoad="body_onload()">
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor "><strong> 
+<script>document.write(str_wifi_mode_x);</script> 
+</strong></td>
+</tr>
+<tr id="tr_ssid">
+<td  width="30%">&nbsp;&nbsp;SSID</td>
+<td>&nbsp;&nbsp;
+<input id="ssid" maxlength="64" onKeyUp="value=value.replace(/[^\x21-\x7e]/ig,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\x21-\x7e]/ig,''))"></td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_ap()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-ap", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

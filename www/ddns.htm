@@ -1,0 +1,444 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="login.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function set_ddns()
+{
+if ($("#service").val() >= 10)
+{
+
+ if($("#port_inp").val()=='')
+ {
+ 	alert(str_not_null);
+ 	$("#port_inp").focus();
+ 	return;
+ }
+
+
+if(($("#port_inp").val()<1) || ($("#port_inp").val()>65535))
+{
+	alert(str_port_range);
+	$("#port_inp").focus();
+	$("#port_inp").select();
+	return;
+}
+}
+var url;
+url='set_ddns.cgi?next_url=ddns.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&service='+ encodeURIComponent($("#service").val());
+url+='&user='+encodeURIComponent($("#user").val());
+url+='&pwd='+encodeURIComponent($("#pwd").val());
+url+='&host='+encodeURIComponent($("#host").val());
+if ($("#service").val() >= 10)
+{
+url+='&proxy_svr='+encodeURIComponent($("#svr").val());
+url+='&proxy_port='+($("#port_inp").val()==''?0:$("#port_inp").val());	
+}
+//if ($("#service").val() > 10)
+//{
+//url+='&proxy_svr='+encodeURIComponent($("#svr1").val());
+//url+='&proxy_port='+($("#port_inp1").val()==''?0:$("#port_inp1").val());	
+//}
+url+='&ddns_mode='+$("#d_mode").val();
+if (($("#restart_dyndns").attr("checked")=="checked")) url+='&restart_dyndns=1';
+
+//alert(url);
+location=url;
+}
+
+var first = true;
+function service_onchanged()
+{
+$("#tr_user").hide();
+$("#tr_pwd").hide();
+$("#tr_host").hide();
+$("#tr_svr").hide();
+$("#tr_port").hide();
+$("#tr_svr1").hide();
+$("#tr_port1").hide();
+$("#tr_mode").hide();
+$("#tr_restart_dyndns").hide();
+
+if(!first)
+{
+$("#user").val("");
+$("#pwd").val("");
+$("#host").val("");
+$("#svr").val("");
+$("#port_inp").val("");	
+$("#svr1").val("");
+$("#port_inp1").val("");	
+
+if($("#service").val() == ddns_service)
+{
+	
+//$("#service").val(ddns_service);
+$("#host").val(ddns_host);
+$("#user").val(ddns_user);
+$("#pwd").val(ddns_pwd);
+$("#svr").val(ddns_proxy_svr);
+$("#port_inp").val((ddns_proxy_port==0)?'80':ddns_proxy_port);
+$("#svr1").val(ddns_proxy_svr);
+$("#port_inp1").val((ddns_proxy_port==0)?'80':ddns_proxy_port);
+$("#d_mode").val(ddns_mode);
+}
+}
+first = false;
+//alert($("#service").val());
+
+if (($("#service").val()==2)||
+($("#service").val()==3)||
+($("#service").val()==4)||
+($("#service").val()==8)||
+($("#service").val()==9))
+{
+$("#tr_user").show();
+$("#tr_pwd").show();
+$("#tr_host").show();
+}
+else if ($("#service").val() == 10)
+{
+$("#tr_user").show();
+$("#tr_pwd").show();
+$("#tr_host").show();
+$("#tr_svr").show();
+$("#tr_port").show();
+$("#tr_mode").show();
+}
+else  if ($("#service").val() == 13 )
+{
+$("#tr_user").show();
+$("#tr_pwd").show();
+//$("#tr_svr").show();
+//$("#tr_port").show();
+svr.value="http://www.88safe.com/vipddns/upgengxin.asp"
+port_inp.value=8009;
+}
+else  if ($("#service").val() == 15 )
+{
+	
+$("#tr_user").show();
+$("#tr_pwd").show();
+//$("#tr_svr").show();
+//$("#tr_port").show();
+svr.value="http://www.vipcam.org/upgengxin.asp"
+port_inp.value=80;
+}
+else  if ($("#service").val() == 19 )
+{
+	
+$("#tr_user").show();
+$("#tr_pwd").show();
+//$("#tr_svr").show();
+//$("#tr_port").show();
+svr.value="http://www.p2pipc.com/upgengxin.asp"
+port_inp.value=80;
+}
+else  if ($("#service").val() == 17 )
+{
+	
+$("#tr_user").show();
+$("#tr_pwd").show();
+$("#tr_host").show();
+port_inp.value=80;
+}
+
+}
+function d2(msg)
+{
+$("#ddns_status_info").html("&nbsp;&nbsp;"+msg);
+}	
+function body_onload()
+{
+$("#service").val(ddns_service);
+$("#host").val(ddns_host);
+$("#user").val(ddns_user);
+$("#pwd").val(ddns_pwd);
+$("#svr").val(ddns_proxy_svr);
+$("#port_inp").val((ddns_proxy_port==0)?'80':ddns_proxy_port);
+$("#svr1").val(ddns_proxy_svr);
+$("#port_inp1").val((ddns_proxy_port==0)?'80':ddns_proxy_port);
+$("#d_mode").val(ddns_mode);
+service_onchanged();
+
+switch (dns_status)
+{
+case 0:
+d2(str_ddns_noaction);
+break;
+case 1:
+d2(str_ddns_waiting);
+break;
+case 2:
+d2(str_ddns_cannotconnect);
+break;
+case 3:
+url='http://'+ddns_host;
+if (location.port!='') url+=':'+location.port;
+d2(str_dyndns_ok+'&nbsp;&nbsp;'+url);
+break;
+case 4:
+d2(str_dyndns_sys_err);
+break;
+case 5:
+d2(str_dyndns_badauth);
+break;
+case 6:
+d2(str_dyndns_donator);
+break;
+case 7:
+d2(str_dyndns_notfqdn);
+break;
+case 8:
+d2(str_dyndns_nohost);
+break;
+case 9:
+d2(str_dyndns_yours);
+break;
+case 10:
+d2(str_dyndns_numhost);
+break;
+case 11:
+d2(str_dyndns_abuse);
+break;
+case 12:
+d2(str_dyndns_server_err);
+break;
+case 13:
+d2(str_dyndns_chat_err);
+break;
+case 14:
+d2(str_oray_chat_err);
+break;
+case 15:
+d2(str_oray_bad_auth);
+break;
+case 16:
+d2(str_oray_bad_host);
+break;
+case 17:
+url='';
+if (ddns_host!='')
+{
+url='&nbsp;&nbsp;'+'http://'+ddns_host;
+if (location.port!='') url=url+':'+location.port;
+}
+if (oray_type)
+d2(str_oray_professional_ok+url);
+else
+d2(str_oray_standard_ok+url);
+break;
+case 18:
+d2(str_ddns_ok);
+break;
+case 19:
+d2(str_ddns_failed);
+break;
+case 20:
+d2(str_yu_ddns_ok);
+break;
+case 21:
+d2(str_yu_ddns_failed);
+break;
+case 22:
+dnsstatus(str_easynx_ok);
+break;
+case 23:
+dnsstatus(str_easynx_noauth);
+break;
+case 24:
+dnsstatus(str_easynx_noid);
+break;
+case 25:
+dnsstatus(str_easynx_over);
+break;
+case 26:
+dnsstatus(str_easynx_iddisable);
+break;
+case 27:
+dnsstatus(str_easynx_errparam);
+break;
+case 28:
+dnsstatus(str_easynx_unknownerr);
+break;
+case 29:
+url='http://'+ddns_host;
+if (location.port!='') url+=':'+location.port;
+d2(str_3322_ok+'&nbsp;&nbsp;'+url);
+break;
+case 30:
+d2(str_3322_sys_err);
+break;
+case 31:
+d2(str_3322_badauth);
+break;
+case 32:
+d2(str_3322_donator);
+break;
+case 33:
+d2(str_3322_notfqdn);
+break;
+case 34:
+d2(str_3322_nohost);
+break;
+case 35:
+d2(str_3322_yours);
+break;
+case 36:
+d2(str_3322_numhost);
+break;
+case 37:
+d2(str_3322_abuse);
+break;
+case 38:
+d2(str_3322_server_err);
+break;
+case 39:
+d2(str_3322_chat_err);
+break;
+case 40:
+d2(str_9299_ok);
+break;
+case 41:
+d2(str_9299_er);
+break;
+case 42:
+d2(str_9299_da);
+break;
+case 43:
+d2(str_9299_sne);
+break;
+case 44:
+d2(str_9299_ne);
+break;
+case 45:
+d2(str_9299_chat_err);
+break;
+}
+}
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_ddns_config);</script> 
+</strong></td>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_ddns_service);</script></td>
+<td>&nbsp;&nbsp;
+<select id="service" onChange="service_onchanged()">
+<script>
+//var ddnsver = 11;
+//alert(ddnsver==11);
+document.write(str_ddns_service_list_new);
+
+</script>
+</select></td>
+</tr>
+<tr id="tr_user">
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_ddns_user);</script></td>
+<td>&nbsp;&nbsp;
+<input id="user" maxlength="64"></td>
+</tr>
+<tr id="tr_pwd">
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_ddns_pwd);</script></td>
+<td>&nbsp;&nbsp;
+<input id="pwd" type="password" maxlength="64"></td>
+</tr>
+<tr id="tr_host">
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_ddns_host);</script></td>
+<td>&nbsp;&nbsp;
+<input id="host" maxlength="64"></td>
+</tr>
+<tr id="tr_svr1">
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_proxy_svr);</script></td>
+<td>&nbsp;&nbsp;
+<input id="svr1" maxlength="64"></td>
+</tr>
+<tr id="tr_port1">
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_proxy_port);</script></td>
+<td>&nbsp;&nbsp;
+<input id="port_inp1" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+</tr>
+<tr id="tr_svr">
+<td class="bc2" >&nbsp;&nbsp; 
+<!--<script>document.write(str_proxy_svr);</script>-->Update URL</td>
+<td>&nbsp;&nbsp;
+<input id="svr" style="width:350px;" maxlength="128"></td>
+</tr>
+<tr id="tr_port">
+<td class="bc2" >&nbsp;&nbsp; 
+<!--<script>document.write(str_mode);/*document.write(str_proxy_port);*/</script>-->URL port</td>
+<td>&nbsp;&nbsp;
+<input id="port_inp" value="80" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+(default：80)</td>
+</tr>
+<tr id="tr_mode">
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_mode);/*document.write(str_proxy_port);*/</script></td>
+<td>&nbsp;&nbsp;
+<select id="d_mode">
+<option value="1">1</option>
+<option value="2">2</option>
+</select></td>
+</tr>
+<tr id="tr_restart_dyndns" style="display:none">
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_restart_dyndns);</script></td>
+<td>&nbsp;&nbsp;
+<input id="restart_dyndns" type="checkbox">
+&nbsp;&nbsp; 
+<script>document.write(str_restart_dyndns_comment);</script></td>
+</tr>
+<tr>
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_ddns_status);</script></td>
+<td id="ddns_status_info">&nbsp;&nbsp;</td>
+</tr>
+<tr id="tr_dyndns_comment">
+<td class="tCenter " colspan="2">&nbsp;&nbsp;<span> 
+<script>document.write(str_dyndns_proxy_comment);</script> 
+</span>&nbsp;&nbsp;</td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_ddns()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-ddns", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+
+<script type="text/javascript" src="rowscolor.js"></script>

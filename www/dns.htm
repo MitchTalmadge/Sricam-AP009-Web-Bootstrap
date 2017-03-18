@@ -1,0 +1,82 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_factory_param.cgi"></script>
+<script src="login.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+
+//function set_network()
+//{
+//	
+//	var factory_server="dns.test.com";
+//var factory_user="test";
+//var factory_passwd="123456";
+//var factory_heatbeat=200;
+//var factory_port=8009;
+//var factory_status=0;
+//
+//
+//	var url;
+//	//$.cookie('reboot_seconds','30');
+//	url='set_dns.cgi?next_url=dns.htm';
+//	url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+//	url+='&enable='+(($("#dns_enable").attr("checked")==true)?1:0);
+//	//alert(url);
+//	location=encodeURI(url);
+//}
+
+function body_onload()
+{
+	//var factory_server = "dns.aaa.com";
+	//var factory_user = "ssssss";
+	var n=factory_server.indexOf('.'); 
+	var str_sver = factory_server.substr(n,(factory_server.length-n));
+	$("#inter_host").val(factory_user+str_sver);
+	//$("#dns_enable").attr("checked",dnsenable?true:false);
+}
+
+</script>
+</head>
+<body onLoad="body_onload()">
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    <td class="normal"><table width="100%" class="summaryTable">
+        <tr>
+          <td colspan="2" class="TitleBgcolor"><strong> 
+            <script>document.write(str_dns_config);</script> 
+            </strong></td>
+        </tr>
+        <tr>
+          <td  width="30%">&nbsp;&nbsp; 
+            <script>document.write(str_dns);</script></td>
+          <td>&nbsp;&nbsp;
+            <input id="inter_host" style="width:350px;background:#CCC;" maxlength="128" readonly></td>
+        </tr>
+      </table>
+      <br>
+      <div class="sendbtnstyle">
+        <!--<button id="set" onClick="set_network()"> <script>document.write(str_set);</script> </button>-->
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+      </div></td>
+  </tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-dns", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+
+<script type="text/javascript" src="rowscolor.js"></script>

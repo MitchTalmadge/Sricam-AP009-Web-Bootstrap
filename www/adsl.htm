@@ -1,0 +1,46 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="style.css" type="text/css">
+<title></title>
+</head>
+<style>
+BODY {
+ font: arial;
+}
+</style>
+<script src="get_params.cgi"></script>
+<script>
+if (alias=='') alias=top.str_anonymous;
+top.alias=alias;
+top.document.title=top.str_device+'('+alias+')';
+function enable_onclick()
+{
+	tr_user.style.display=enable.checked?'':'none';
+	tr_pwd.style.display=enable.checked?'':'none';
+}
+function body_onload()
+{
+	enable.checked=pppoe_enable?true:false;
+	user.value=pppoe_user;
+	pwd.value=pppoe_pwd;
+	enable_onclick();
+}
+function set_adsl()
+{
+	parent.content.reboot_seconds=30;
+	url='set_pppoe.cgi?next_url=rebootme.htm';
+	url+=enable.checked?('&enable=1&user='+user.value+'&pwd='+pwd.value):'&enable=0&user=&pwd=';
+	location=url;
+}
+</script>	
+<body onLoad="body_onload()">
+<table width="640" height="480"><tr><td class="v1 pad2 bc4"><table width="100%" class="v2 f14 mid01">
+	<tr height="25"><td colspan="2" class="h2 bc1 mid02"><strong><script>document.write(top.str_adsl_config);</script></strong></td></tr>
+	<tr height="25"><td class="bc2 mid04" width="40%">&nbsp;&nbsp;<script>document.write(top.str_adsl_choice);</script></td><td class="mid02">&nbsp;&nbsp;<input id="enable" type="checkbox" onClick="enable_onclick()"></td></tr>
+	<tr id="tr_user" height="25"><td class="bc2 mid04">&nbsp;&nbsp;<script>document.write(top.str_adsl_user);</script></td><td class="mid02">&nbsp;&nbsp;<input id="user" maxlength="64"></td></tr>
+	<tr id="tr_pwd" height="25"><td class="bc2 mid04">&nbsp;&nbsp;<script>document.write(top.str_adsl_pwd);</script></td><td class="mid02">&nbsp;&nbsp;<input id="pwd" type="password" maxlength="64"></td></tr>
+	<tr height="25"><td class="h2 mid03" colspan="2"><button onClick="set_adsl()"><script>document.write(top.str_set);</script></button>&nbsp;&nbsp;&nbsp;&nbsp;<button onClick="location.reload()"><script>document.write(top.str_refresh);</script></button></td></tr>
+</table></td></tr></table>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="login.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function set_users()
+{
+
+if($("#user3").val() == ''){
+alert(str_user_x1);
+return;
+}
+if(($("#user1").val() == '')&&($("#user2").val() != '')){
+if($("#user2").val()==$("#user3").val())
+{
+alert(str_user_x2);
+return;
+}
+}
+if(($("#user2").val() == '')&&($("#user1").val() != '')){
+if($("#user1").val()==$("#user3").val())
+{
+alert(str_user_x2);
+return;
+}
+}
+if(($("#user2").val() != '')&&($("#user1").val() != '')){
+if(($("#user1").val()==$("#user3").val()) || ($("#user2").val() == $("#user3").val()) || ($("#user1").val()==$("#user2").val()))
+{
+alert(str_user_x2);
+return;
+}
+}
+
+var url;
+url='set_users.cgi?next_url=rebootme.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&user1='+encodeURIComponent($("#user1").val())+'&pwd1='+encodeURIComponent($("#pwd1").val())+'&pri1=1';//+$("#pri1").val();
+url+='&user2='+encodeURIComponent($("#user2").val())+'&pwd2='+encodeURIComponent($("#pwd2").val())+'&pri2=2';//+$("#pri2").val();
+url+='&user3='+encodeURIComponent($("#user3").val())+'&pwd3='+encodeURIComponent($("#pwd3").val())+'&pri3=255';//+$("#pri3").val();
+
+
+location=url;
+}
+
+function body_onload()
+{
+$("#user1").val((user1_name));
+$("#user2").val((user2_name));
+$("#user3").val((user3_name));
+
+
+$("#pwd1").val(user1_pwd);
+$("#pwd2").val(user2_pwd);
+$("#pwd3").val(user3_pwd);
+}
+
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="3" class="TitleBgcolor"><strong>
+<script>document.write(str_users_config);</script>
+</strong></td>
+</tr>
+<tr>
+<td width="30%" >&nbsp;&nbsp;
+<!--<script>document.write(str_group);</script>--></td>
+<td>&nbsp;&nbsp;
+<script>document.write(str_user);</script></td>
+<td>&nbsp;&nbsp;
+<script>document.write(str_pwd);</script></td>
+</tr>
+<tr>
+<td align="center" ><script>document.write(str_user_111);</script><!--<select id="pri1" disabled><script>document.write(str_pri_list);</script></select>--></td>
+<td><input id="user1" maxlength="16" onKeyUp="value=value.replace(/[^\w\.\/]/ig,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\w\.\/]/ig,''))"></td>
+<td><input id="pwd1" type="password" maxlength="16" ></td>
+
+</tr>
+<tr>
+<td align="center" ><script>document.write(str_user_222);</script><!--<select id="pri2" disabled><script>document.write(str_pri_list);</script></select>--></td>
+<td><input id="user2" maxlength="16" onKeyUp="value=value.replace(/[^\w\.\/]/ig,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\w\.\/]/ig,''))"></td>
+<td><input id="pwd2" type="password" maxlength="16" ></td>
+</tr>
+<tr>
+<td align="center" ><script>document.write(str_user_333);</script><!--<select id="pri8" disabled><script>document.write(str_pri_list);</script></select>--></td>
+<td><input id="user3" maxlength="16" onKeyUp="value=value.replace(/[^\w\.\/]/ig,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\w\.\/]/ig,''))"></td>
+<td><input id="pwd3" type="password" maxlength="16" ></td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_users()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-user", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

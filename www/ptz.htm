@@ -1,0 +1,150 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="login.cgi"></script>
+<script src="get_misc.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function set_ptz()
+{
+var url;
+url='set_misc.cgi?next_url=ptz.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+
+url+='&ptz_patrol_rate='+$("#pt_speed").val();
+url+='&ptz_patrol_up_rate='+$("#pt_speed").val();
+url+='&ptz_patrol_down_rate='+$("#pt_speed").val();
+url+='&ptz_patrol_left_rate='+$("#pt_speed").val();
+url+='&ptz_patrol_right_rate='+$("#pt_speed").val();
+
+url+='&ptz_dispreset='+(($("#ptz_dispreset").attr("checked")=="checked")?1:0);
+url+='&ptz_preset='+$("#pt_preset").val();
+url+='&led_mode='+$("#led_mode_id").val();
+url+='&ptz_run_times='+$("#pt_run").val();
+
+location=url;
+}
+function body_onload()
+{
+$("#ptz_dispreset").attr("checked",ptz_disppreset?true:false);
+$("#pt_preset").val(preset_onstart);
+$("#pt_speed").val(ptz_patrol_rate);
+
+$("#pt_run").val(ptruntimes);
+$("#led_mode_id").val(led_mode);
+}
+</script>
+</head>
+<body onLoad="body_onload()" > 
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor "><strong> 
+<script>document.write(str_ptz_config);</script> 
+</strong></td>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_led_mode);</script></td>
+<td>&nbsp;&nbsp;
+<select id="led_mode_id">
+<option value="0"> 
+<script>document.write(str_close);</script> 
+</option>
+<option value="1"> 
+<script>document.write(str_open);</script> 
+</option>
+</select></td>
+</tr>
+<tr id="tr_ptz_dispreset">
+<td width="30%" class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_pz_dispreset);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" id="ptz_dispreset" /></td>
+</tr>
+<tr id="tr_pt_preset">
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_pt_preset);</script></td>
+<td>&nbsp;&nbsp;
+<select id="pt_preset">
+<script>document.write(str_ptz_run_1);</script>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12">12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option value="16">16</option>
+</select></td>
+</tr>
+<tr>
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_pt_speed);</script></td>
+<td>&nbsp;&nbsp;
+<select id="pt_speed">
+<option value="1">1</script></option>
+<option value="2">2</script></option>
+<option value="3">3</script></option>
+<option value="4">4</script></option>
+<option value="5">5</script></option>
+<option value="6">6</script></option>
+<option value="7">7</script></option>
+<option value="8">8</script></option>
+<option value="9">9</script></option>
+<option value="10">10</script></option>
+</select></td>
+</tr>
+<tr>
+<td class="bc2" >&nbsp;&nbsp; 
+<script>document.write(str_pt_run);</script></td>
+<td>&nbsp;&nbsp;
+<select id="pt_run">
+<option value="0"><script>document.write(str_pt_run_always);</script></option>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+</select></td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_ptz()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-ptz", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

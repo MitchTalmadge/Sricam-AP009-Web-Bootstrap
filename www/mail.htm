@@ -1,0 +1,239 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="login.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+
+
+
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+
+
+function set_mail()
+{
+//if($("#svr").val()=='')
+//{
+//	alert(str_not_null);
+//	$("#svr").focus();
+//	return;
+//}
+if($("#smtp_port").val()=='')
+{
+	alert(str_not_null);
+	$("#smtp_port").focus();
+	return;
+}
+
+if(($("#smtp_port").val()<1) || ($("#smtp_port").val()>65535))
+{
+	alert(str_port_range);
+	$("#smtp_port").focus();
+	$("#smtp_port").select();
+	return;
+}
+	
+//if(($("#receiver1").val()=='')&&
+//($("#receiver2").val()=='')&&
+//($("#receiver3").val()=='')&&
+//($("#receiver4").val()==''))
+//{
+//	alert(str_mail_reviver_null);
+//	$("#receiver1").focus();
+//	$("#receiver1").select();
+//	return;
+//}
+
+var url;
+url='set_mail.cgi?next_url=mail.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&sender='+encodeURIComponent($("#sender").val());
+url+='&receiver1='+encodeURIComponent($("#receiver1").val());
+url+='&receiver2='+encodeURIComponent($("#receiver2").val());
+url+='&receiver3='+encodeURIComponent($("#receiver3").val());
+url+='&receiver4='+encodeURIComponent($("#receiver4").val());
+url+='&ssl='+$("#ssl_id").val();
+url+='&svr='+encodeURIComponent($("#svr").val());
+url+='&smtpport='+(($("#smtp_port").val()=='')?25:$("#smtp_port").val());
+url+='&user='+(($("#auth").attr("checked")=="checked")?encodeURIComponent($("#user").val()):'');
+url+='&pwd='+(($("#auth").attr("checked")=="checked")?encodeURIComponent($("#pwd").val()):'');
+
+location=url;
+}
+function mailtest()
+{
+var url;
+url='mailtest.cgi?next_url=test_mail.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+window.open(url,"","")
+}
+function auth_onclick()
+{
+($("#auth").attr("checked")=="checked")?$("#tr_user").show():$("#tr_user").hide();
+($("#auth").attr("checked")=="checked")?$("#tr_pwd").show():$("#tr_pwd").hide();
+}
+function onselsmtp()
+{
+svr.value=smtp_sel.value;
+if(smtp_sel.value=="smtp.gmail.com")
+{
+	$("#smtp_port").val(465);
+	$("#ssl_id").val(2);
+}
+else{
+	$("#smtp_port").val(25);
+	$("#ssl_id").val(0);	
+}
+$("#auth").attr("checked",true)
+auth_onclick();
+}
+function body_onload()
+{
+$("#sender").val(mail_sender);
+$("#receiver1").val(mail_receiver1);
+$("#receiver2").val(mail_receiver2);
+$("#receiver3").val(mail_receiver3);
+$("#receiver4").val(mail_receiver4);
+$("#ssl_id").val(mailssl);
+$("#smtp_port").val((!mail_port)?25:mail_port);
+$("#svr").val(mail_svr);
+$("#user").val(mail_user);
+$("#pwd").val(mail_pwd);
+$("#auth").attr("checked",(mail_user=='')?false:true)
+auth_onclick();
+}
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_mail_config);</script> 
+</strong></td>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_sender);</script></td>
+<td>&nbsp;&nbsp;
+<input id="sender" maxlength="64"></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_smtp_svr);</script></td>
+<td>&nbsp;&nbsp;
+<input id="svr" maxlength="64">&nbsp;&nbsp;<select id="smtp_sel" name="smtp_sel" onChange="onselsmtp()">
+		<script>document.write(str_mail_sel_ser);</script>
+		<option value="smtp.gmail.com" >@gmail.com</option>
+		<option value="smtp.mail.yahoo.com">@yahoo.com,@yahoo.com.cn</option>
+		<option value="smtp.sina.com.cn">@sina.com</option>
+		<option value="smtp.qq.com">@qq.com</option>
+		<option value="smtp.sohu.com">@sohu.com</option>
+		<option value="smtp.yeah.net">@yeah.net</option>
+		<option value="smtp.126.com">@126.com</option>
+		<option value="smtp.163.com">@163.com</option>
+		<option value="smtp.tom.com">@tom.com</option>
+		<option value="smtp.263.net">@263.net</option>
+		<option value="smtp.21cn.com">@21cn.com</option>
+		<option value="mx.eyou.com">@eyou.com</option>		
+		</select></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_smtp_port);</script></td>
+<td>&nbsp;&nbsp;
+<input id="smtp_port" maxlength="5" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_smtp_auth);</script></td>
+<td>&nbsp;&nbsp;
+<input id="auth" type="checkbox" onClick="auth_onclick()"></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_mailssl);</script></td>
+<td>&nbsp;&nbsp;
+<select id="ssl_id">
+<option value="0">NONE</option>
+<option value="1">SSL</option>
+<option value="2">TLS</option>
+</select></td>
+</tr>
+<tr id="tr_user">
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_smtp_user);</script></td>
+<td>&nbsp;&nbsp;
+<input id="user" maxlength="64"></td>
+</tr>
+<tr id="tr_pwd">
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_smtp_pwd);</script></td>
+<td>&nbsp;&nbsp;
+<input id="pwd" type="password" maxlength="64"></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_receiver);</script> 
+1</td>
+<td>&nbsp;&nbsp;
+<input id="receiver1" maxlength="64"></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_receiver);</script> 
+2</td>
+<td>&nbsp;&nbsp;
+<input id="receiver2" maxlength="64"></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_receiver);</script> 
+3</td>
+<td>&nbsp;&nbsp;
+<input id="receiver3" maxlength="64"></td>
+</tr>
+<tr>
+<td class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_receiver);</script> 
+4</td>
+<td>&nbsp;&nbsp;
+<input id="receiver4" maxlength="64"></td>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp;</td>
+<td>&nbsp;&nbsp;
+<button onClick="mailtest()"> 
+<script>document.write(str_test);</script> 
+</button>
+&nbsp;&nbsp;&nbsp;&nbsp; 
+<script>document.write(str_test_info);</script> 
+</script></td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_mail()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-mail", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

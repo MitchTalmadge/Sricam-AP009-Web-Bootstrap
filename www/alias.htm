@@ -1,0 +1,67 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function change_name()
+{
+//if($("#alias_input").val()=='')
+//{
+//	alert(str_not_null);
+//	$("#alias_input").focus();
+//	return;
+//}
+
+//http://192.168.1.103:81/set_alias.cgi?alias=111&next_url=alias.htm&loginuse=admin&loginpas=
+var url='set_alias.cgi?alias='+encodeURIComponent($("#alias_input").val())+'&next_url=alias.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+location= url;
+}
+function body_onload()
+{
+$("#alias_input").val(alias);
+}
+
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_alias_config);</script> 
+</strong></td>
+</tr>
+<tr>
+<td width="30%" >&nbsp;&nbsp; 
+<script>document.write(str_alias);</script></td>
+<td>&nbsp;&nbsp;
+<input id="alias_input" maxlength="24" size="25" onKeyUp="value=value.replace(/[^\\x21-\x7e]/ig,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\x21-\x7e]/ig,''))"></td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle" >
+<button id="set" onClick="change_name()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-alias", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

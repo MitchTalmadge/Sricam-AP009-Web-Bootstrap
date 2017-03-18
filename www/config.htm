@@ -1,0 +1,35 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function body_onload()
+{
+}
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table cellspacing="0" cellpadding="0" align="center" height="64">
+<tr>
+<td>&nbsp;</td>
+</tr>
+</table><table class="layout-grid" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td width="200"><script>document.write(obj_nav);</script></td>
+<td class="normal">
+<iframe name="CfgIFrame" id="CfgIFrame" width="720" height="610" src="status.htm" scrolling="auto" frameborder="0" allowTransparency="true"></iframe>
+</td>
+</tr>
+</table>
+</body>
+</html>
+<script type="text/javascript" src="rowscolor.js"></script>

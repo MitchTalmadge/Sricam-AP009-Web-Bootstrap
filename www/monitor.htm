@@ -1,0 +1,1461 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="style.css" type="text/css">
+<title></title>
+</head>
+<script src="login.cgi"></script>
+<script src="get_camera_params.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="get_status.cgi"></script>
+<script src="get_misc.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<script>
+var scroll_min = 42;  //682
+var scroll_max = scroll_min+80;
+var pan_speed    = 5;
+var record_osd=1;
+var ptz_type=0;
+var led_modetype=0;
+
+var ERROR_TIMEOUT=-3;
+var ERROR_CANCEL=-5;
+var current=0;
+var PRI_REFUSE=0;
+var PRI_VISITOR=1;
+var PRI_OPERATOR=2;
+var PRI_ADMINISTRATOR=255;
+var R160_120=2;
+var R320_240=8;
+var R640_480=32;
+
+// 云台方向
+//var PTZ_STOP=0;
+var PTZ_UP=0;
+var PTZ_UP_STOP=1;
+var PTZ_DOWN=2;
+var PTZ_DOWN_STOP=3;
+var PTZ_LEFT=4;
+var PTZ_LEFT_STOP=5;
+var PTZ_RIGHT=6;
+var PTZ_RIGHT_STOP=7;
+var PTZ_LEFT_UP=90;
+var PTZ_RIGHT_UP=91;
+var PTZ_LEFT_DOWN=92;
+var PTZ_RIGHT_DOWN=93;
+var PTZ_STOP=1;
+
+var PTZ_CENTER=25;
+//上下/水平巡视
+var PTZ_VPATROL=26;
+var PTZ_VPATROL_STOP=27;
+var PTZ_HPATROL=28;
+var PTZ_HPATROL_STOP=29;
+
+var IO_ON=94;
+var IO_OFF=95;
+
+
+var is_hpatrol = 0;
+var is_vpatrol = 0;
+var is_switchon = 0;
+var is_switchoff = 0;
+
+
+var PTZ_PRESET_START = 30;
+
+
+var nCurSel=0;//当前选中的控件索引
+var nDClick=0;//当前双击次数
+var w1 = 638;
+var h1 = 465;
+var w4 = (w1/2);
+var w9 = (w1/3);
+var h4 = (h1/2);
+var h9 = (h1/3);
+
+
+var n_ir = new Array(); n_ir[0]=n_ir[1]=n_ir[2]=n_ir[3]=n_ir[4]=n_ir[5]=n_ir[6]=n_ir[7]=n_ir[8]=0;
+
+
+//return cgi-url-----------------------------------------------------------------------------------------------------------
+function getHttpHost(cgiUrl)
+{
+	if(nCurSel == 0) { return (cgiUrl+"?loginuse="+top.cookieuser+"&loginpas="+top.cookiepass);}
+	if(nCurSel == 1) { return ("http://"+dev2_host+":"+dev2_port+"/"+cgiUrl+"?loginuse="+dev2_user+"&loginpas="+dev2_pwd) ;}
+	if(nCurSel == 2) { return ("http://"+dev3_host+":"+dev3_port+"/"+cgiUrl+"?loginuse="+dev3_user+"&loginpas="+dev3_pwd) ;}
+	if(nCurSel == 3) { return ("http://"+dev4_host+":"+dev4_port+"/"+cgiUrl+"?loginuse="+dev4_user+"&loginpas="+dev4_pwd) ;}
+	if(nCurSel == 4) { return ("http://"+dev5_host+":"+dev5_port+"/"+cgiUrl+"?loginuse="+dev5_user+"&loginpas="+dev5_pwd) ;}
+	if(nCurSel == 5) { return ("http://"+dev6_host+":"+dev6_port+"/"+cgiUrl+"?loginuse="+dev6_user+"&loginpas="+dev6_pwd) ;}
+	if(nCurSel == 6) { return ("http://"+dev7_host+":"+dev7_port+"/"+cgiUrl+"?loginuse="+dev7_user+"&loginpas="+dev7_pwd) ;}
+	if(nCurSel == 7) { return ("http://"+dev8_host+":"+dev8_port+"/"+cgiUrl+"?loginuse="+dev8_user+"&loginpas="+dev8_pwd) ;}
+	if(nCurSel == 8) { return ("http://"+dev9_host+":"+dev9_port+"/"+cgiUrl+"?loginuse="+dev9_user+"&loginpas="+dev9_pwd) ;}
+}
+function decoder_control(command)
+{
+	if(top.cookiepri == 1) return;
+	//action_zone.location='decoder_control.cgi?command='+command;
+	var url = getHttpHost("decoder_control.cgi");
+url+='&command='+command;
+url+='&onestep=0';
+url+='&' + new Date().getTime() + Math.random();
+//alert(url);
+$.getScript(url);
+}
+function camera_control(param,value)
+{
+	if(top.cookiepri == 1) return;
+	//action_zone.location='camera_control.cgi?param='+param+'&value='+value;
+	var url = getHttpHost("camera_control.cgi");
+url+='&param='+param+'&value='+value;
+url+='&' + new Date().getTime() + Math.random();
+$.getScript(url);
+
+}
+
+function led_control(param,value)
+{
+	if(top.cookiepri == 1) return;
+	//action_zone.location='camera_control.cgi?param='+param+'&value='+value;
+	var url = getHttpHost("set_misc.cgi");
+url+='&led_mode='+value;
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+//url+='&' + new Date().getTime() + Math.random();
+$.getScript(url);
+
+}
+////////////////////////////////////////////////新增加的云台控制
+
+//上左
+function up_left_onmousedown() 
+{
+	up_left.src=up_left_down.src;
+	decoder_control(PTZ_LEFT_UP);
+	
+}
+function up_left_onmouseup() 
+{
+	up_left.src=up_left_up.src;
+	decoder_control(PTZ_UP_STOP);
+	
+}
+//上右边
+function up_right_onmousedown() 
+{
+	up_right.src=up_right_down.src;
+	decoder_control(PTZ_RIGHT_UP);
+	
+}
+function up_right_onmouseup() 
+{
+	up_right.src=up_right_up.src;
+	decoder_control(PTZ_UP_STOP);
+	
+}
+//下左
+function bot_left_onmousedown() 
+{
+	bot_left.src=bot_left_down.src;
+	decoder_control(PTZ_LEFT_DOWN);
+	
+}
+function bot_left_onmouseup() 
+{
+	bot_left.src=bot_left_up.src;
+	decoder_control(PTZ_DOWN_STOP);
+	
+}
+
+//下右
+function bot_right_onmousedown() 
+{
+	bot_right.src=bot_right_down.src;
+	decoder_control(PTZ_RIGHT_DOWN);
+	
+}
+function bot_right_onmouseup() 
+{
+	bot_right.src=bot_right_up.src;
+	decoder_control(PTZ_DOWN_STOP);
+	
+}
+
+//////////////////////////////////////////////
+function up_onmousedown() 
+{
+	up.src=up_down.src;
+	decoder_control(PTZ_UP);
+	
+}
+function up_onmouseup() 
+{
+	up.src=up_up.src;
+	decoder_control(PTZ_UP_STOP);
+}
+
+function down_onmousedown() 
+{
+	down.src=down_down.src;
+//	if (flip&0x01)
+//	    decoder_control(PTZ_UP);
+//	else
+		decoder_control(PTZ_DOWN);
+}
+function down_onmouseup() 
+{
+	down.src=down_up.src;
+	decoder_control( PTZ_DOWN_STOP);	
+}
+function left_onmousedown() 
+{
+	left.src=left_down.src;
+	decoder_control( PTZ_LEFT);
+}
+function left_onmouseup() 
+{
+	left.src=left_up.src;
+	decoder_control(  PTZ_LEFT_STOP);
+}
+function right_onmousedown() 
+{
+	right.src=right_down.src;
+//	if (flip&0x02)
+//	    decoder_control(PAN_LEFT);
+//	else	
+		decoder_control(  PTZ_RIGHT);
+}
+
+function right_onmouseup() 
+{
+	right.src=right_up.src;
+	decoder_control( PTZ_RIGHT_STOP);	
+}
+
+function image_reversal_onclick()
+{
+	if(flip & 0x01)
+	{
+		flip=flip&0x02;
+		reversal.src=reversal_up.src;
+	}
+	else
+	{
+		flip=flip|0x01;
+		reversal.src=reversal_down.src;
+	}
+	camera_control(5,flip);
+}
+
+function image_mirror_onclick()
+{
+   if(flip&0x02)
+    {
+      flip = flip&0x01;
+      mirror.src=mirror_up.src;
+    }
+    else
+    {
+      flip = flip|0x02;
+      mirror.src=mirror_down.src;
+    }
+    camera_control(5,flip);
+}
+
+function center_onstart_onclick()
+{
+ if (ipcam[current].MonitorStatus == 2)
+{
+   if(ptz_center_onstart == 0)
+    {
+    center_onstart_zone.location='set_misc.cgi?ptz_center_onstart=1';
+      center_onstart.src=center_onstart_on.src;
+      ptz_center_onstart=1;
+    }
+    else
+    {
+    center_onstart_zone.location='set_misc.cgi?ptz_center_onstart=0';
+      center_onstart.src=center_onstart_off.src;
+      ptz_center_onstart=0;
+    }
+    }
+}
+
+
+var t;
+var time_temp;
+function zoomsub_onmousedown()
+{
+time_temp = 0;
+zoomsub.src = zoomsub_down.src;
+zoomsub_temp();
+}
+function zoomsub_temp()
+{
+    time_temp+=100;
+    if(time_temp < 500)
+    {
+        ipcam[current].DecoderControl(PTZ_ZOOM_TELE);
+        t = setTimeout("zoomsub_temp()",100);     
+    }
+    else
+    {
+        clearTimeout(t);
+        ipcam[current].DecoderControl(PTZ_ZOOM_TELE_STOP);
+        zoomsub.src = zoomsub_up.src;
+    }
+    
+}
+function zoomsub_onmouseup()
+{
+clearTimeout(t);
+ipcam[current].DecoderControl(PTZ_ZOOM_TELE_STOP);
+zoomsub.src = zoomsub_up.src;
+}
+
+function zoomadd_onmousedown()
+{
+time_temp = 0;
+zoomadd.src = zoomadd_down.src;
+zoomadd_temp();
+}
+function zoomadd_temp()
+{
+    time_temp+=100;
+    if(time_temp < 500)
+    {
+        ipcam[current].DecoderControl(PTZ_ZOOM_WIDE);
+        t = setTimeout("zoomadd_temp()",100);     
+    }
+    else
+    {
+        clearTimeout(t);
+        ipcam[current].DecoderControl(PTZ_ZOOM_WIDE_STOP);
+        zoomadd.src = zoomadd_up.src;
+    }
+    
+}
+function zoomadd_onmouseup()
+{
+clearTimeout(t);
+ipcam[current].DecoderControl(PTZ_ZOOM_WIDE_STOP);
+zoomadd.src = zoomadd_up.src;
+}
+
+//屏幕分割-----------------------------------------------------------------------------------------------------------
+var n_x = 0;
+function x_onclick(index) 
+{
+	//alert(top.cookiepri);
+	n_x = index;
+	for (i=0;i<9;i++)
+	{
+		ipcam[i].style.width=0;
+		ipcam[i].style.height=0;
+		ipcam[i].UpdataSize();
+	}
+//	$("#x1").attr("src","images/x1_off.png");
+//	$("#x4").attr("src","images/x4_off.png");
+//	$("#x9").attr("src","images/x9_off.png");
+
+	if (index == 1){
+		//if(!bSingleFull)
+		helper_ChangeFocus(0);
+		ipcam[0].SetFocus(1);
+		   	x1.src = check_on1.src;
+   			x4.src = check_off4.src;
+   			x9.src = check_off9.src;
+		//helper_showParam();
+		{
+		if(resolution == 0)
+		{			
+			ipcam[0].style.width=w1;//320;
+			ipcam[0].style.height=h1;//240;	
+		}
+		else if(resolution == 1)
+		{
+			ipcam[0].style.width=320;
+			ipcam[0].style.height=240;	
+		}
+		else
+		{
+			ipcam[0].style.width=787;
+			ipcam[0].style.height=462;	
+		}
+		}
+		//$("#x1").attr("src","images/x1_on.png");
+	}	
+	else if(index == 4){
+		   x1.src = check_off1.src;
+           x4.src = check_on4.src;
+           x9.src = check_off9.src;
+		for (i=0;i<4;++i){	
+			var w_w4=787/2;
+			var h_w4=462/2;				
+			ipcam[i].style.width= w_w4-3;
+			ipcam[i].style.height=h_w4;
+			ipcam[i].UpdataSize();
+		} 
+		//$("#x4").attr("src","images/x4_on.png");
+	}
+	else{
+		   x1.src = check_off1.src;
+           x4.src = check_off4.src;
+           x9.src = check_on9.src;
+		for (i=0;i<9;++i){			
+		//2013.11.22 1.4.9画面
+			var w_w9=787/3;
+			var h_w9=462/3;	
+			ipcam[i].style.width= w_w9-4;   
+			ipcam[i].style.height=h_w9-4;
+			ipcam[i].UpdataSize();
+		} 	
+		
+		//$("#x9").attr("src","images/x9_on.png");
+	}
+}
+
+//云台控制-----------------------------------------------------------------------------------------------------------
+
+
+
+function plus_brightness_onclick(){
+  	val=brightness_input.value;
+	for(m=0; m<10;m++)
+		val++;
+
+	if (val>255)
+	{
+		val=255;
+	}
+	brightness_input.value=val;
+	camera_control(1,val);	
+}
+
+function minus_brightness_onclick(){
+  	val=brightness_input.value;
+	val-=10;
+	if (val<=0)
+	{
+		val=1;
+	}
+		brightness_input.value=val;
+		camera_control(1,val);	
+	
+}
+
+function plus_contrast_onclick(){
+	val=contrast_input.value;
+	for(m=0; m<10;m++)
+		val++;
+	if (val>255)
+	{
+		val=255;
+	}
+	contrast_input.value=val;
+	camera_control(2,val);
+}
+
+function minus_contrast_onclick(){
+	val=contrast_input.value;
+	val-=10;
+	if (val<=0)
+	{
+		val = 1;
+	}
+			contrast_input.value=val;
+		camera_control(2,val);
+}
+
+function hpatrol_onclick(){
+	if (!ptz_type)
+	{
+		if(is_hpatrol == 1)
+		{
+	 	   	is_hpatrol = 0;
+	 	   	hpatrol.src = hpatrol_up.src;
+		 	decoder_control(PTZ_HPATROL_STOP);
+ 		}
+	 	else
+	 	{
+	 		is_hpatrol = 1;
+	 		hpatrol.src = hpatrol_down.src;
+		 	decoder_control(PTZ_HPATROL);
+ 		}
+	}
+}
+
+function vpatrol_onclick(){
+	if (!ptz_type)
+	{
+		if(is_vpatrol == 1)
+		{
+	 	   decoder_control(PTZ_VPATROL_STOP);
+	 	   is_vpatrol = 0;
+	 	   vpatrol.src = vpatrol_up.src;
+	 	}
+	 	else
+	 	{
+	 		decoder_control(PTZ_VPATROL);
+	 		is_vpatrol = 1;
+	 		vpatrol.src = vpatrol_down.src;
+	 	}
+	}
+}
+
+///add by gongcent
+function image_switchon_onclick(){
+	if(is_switchon == 0){
+		is_switchon=1;
+		is_switchoff=0;
+		decoder_control(IO_ON);
+		switchon.src = switchon_down.src;
+		switchoff.src = switchoff_up.src;
+}
+	else{
+		is_switchon=0;
+	decoder_control(IO_ON);
+	switchon.src = switchon_up.src;
+	}	
+}
+
+function image_switchoff_onclick(){
+	if(is_switchoff == 0){
+		is_switchoff=1;
+		is_switchon=0;
+		decoder_control(IO_OFF);
+		switchoff.src = switchoff_down.src;
+		switchon.src = switchon_up.src;
+	}
+	else{
+		is_switchoff=0
+		decoder_control(IO_OFF);
+		switchoff.src = switchoff_up.src;
+	}	
+
+}
+//add by gongcent end
+
+function setup_onclick(){
+  window.location = "admin.htm";    //跳转后台管理链接
+}
+function bofang_tf(){   //TF卡录像播放
+	if(top.cookiepri != 255) return;
+	location="recordplay.htm";
+}
+function preset_set() {
+	if(top.cookiepri == 1) return;
+    var nvalue = PTZ_PRESET_START + presetno.selectedIndex * 2;
+    //decoder_control(PTZ_PRESET_START + nvalue);
+
+//alert(nvalue);
+var url = getHttpHost("decoder_control.cgi");
+url+='&command='+nvalue;
+url+='&onestep=0'+'&sit='+nvalue;
+url+='&' + new Date().getTime() + Math.random();
+$.getScript(url);
+}
+
+function preset_call() {
+	if(top.cookiepri == 1) return;
+    var nvalue =PTZ_PRESET_START+ presetno.selectedIndex * 2 +1;
+    //decoder_control(PTZ_PRESET_START + nvalue + 1);
+	
+	var url = getHttpHost("decoder_control.cgi");
+	url+='&command='+nvalue;
+	url+='&onestep=0'+'&sit='+nvalue;
+	url+='&' + new Date().getTime() + Math.random();
+	$.getScript(url);
+}
+
+function default_all() {
+	if(top.cookiepri == 1) return;
+	
+    resolution.selectedIndex = 1;
+    ipcam[current].Resolution = resolution.value;
+    mode.selectedIndex = 0;
+    ipcam[current].Saturation = mode.value;
+    brightness_input.value = 6;
+    if (brightness_input.value != Math.round(ipcam[current].brightness_input / 16))
+        ipcam[current].brightness_input = brightness_input.value * 16;
+    contrast_input.value = 4;
+    if (contrast_input.value != ipcam[current].contrast_input)
+        ipcam[current].contrast_input = contrast_input.value;
+}
+
+function OnResolutionChanged(nValue) {
+    camera_control(0, nValue);
+	var url = getHttpHost("get_camera_params.cgi");
+	url += "&"+(new Date-0);//alert(url);
+	$.getScript(url, function(){
+		if(n_x == 1) 
+			x_onclick(n_x);	
+	});
+    //setTimeout('main.location.reload()',2000);
+}
+
+function thumb_setpos(dspeed){
+	thumb=id_pos_panspeed;
+	var new_pos = scroll_min + (scroll_max - scroll_min) * dspeed / 9;
+	new_pos = Math.min(scroll_max,Math.max(scroll_min,new_pos));
+	thumb.style.pixelLeft = new_pos;
+}
+
+function thumb_drag() {
+    if (thumb) {
+        var new_pos = start_thumb_pos + event.clientX - start_event_pos;
+        new_pos = Math.min(scroll_max, Math.max(scroll_min, new_pos)); //  new_pos = Math.round(Math.min(scroll_max, Math.max(scroll_min, new_pos))/10)*10-2;
+        if (new_pos != thumb.style.pixelLeft) {
+            thumb.style.pixelLeft = new_pos;
+            var m_speed = (thumb.style.pixelLeft - scroll_min) * 9 / (scroll_max - scroll_min);
+            m_speed = Math.round(m_speed);
+ 
+            pan_speed = m_speed;
+            thumb.title = m_speed;
+        }
+        return false;
+    }
+}
+
+function thumb_drag_start(obj) {
+    thumb = obj;
+
+    start_event_pos = event.clientX;
+    start_thumb_pos = thumb.style.pixelLeft;
+    document.onmousemove = thumb_drag;
+
+    if (document.all) {
+        document.onmouseup = thumb_drag_end;
+    }
+}
+
+function SetSpeed(dspeed){
+	//alert(dspeed);
+action_zone.location='set_misc.cgi?ptz_patrol_rate='+dspeed*2;
+}
+
+function thumb_drag_end(){
+    if (thumb == null)
+        return;
+	//SetSpeed(10-pan_speed);  
+	//alert(pan_speed);
+	camera_control(100,pan_speed+1)  
+    thumb = null;
+}
+
+
+function ipcam_OnAlarm(index, alarm){
+    cameras.alarm[index] = 1;
+    cameras.alarm_light[index] = 1;
+    if (current == index)
+        device_status.src = red_ball.src;
+}
+var n_osd = new Array(); n_osd[0]=n_osd[1]=n_osd[2]=n_osd[3]=n_osd[4]=n_osd[5]=n_osd[6]=n_osd[7]=n_osd[8]=0;
+function osd_onchange(){
+	if(n_osd[nCurSel] == 0){	n_osd[nCurSel] = 1;ipcam[nCurSel].SetOsd(alias);}
+	else{			n_osd[nCurSel] = 0;ipcam[nCurSel].RemoveOsd();}
+}
+function record_onclick(){
+	if(ipcam[nCurSel].RecordState == 0) 	{	if(ipcam[nCurSel].StartRecord()!=-1)record.src=record_on.src;}
+	else									{	if(ipcam[nCurSel].StopRecord()!=-1)record.src=record_off.src;}
+}
+function snapshot_onclick(){
+	ipcam[nCurSel].CapturePic();
+//window.open('snapshot.htm').focus();
+}
+
+function talk_onclick(){
+	  if(ipcam[nCurSel].TalkState == 0){	
+		if(ipcam[nCurSel].StartTalk()!=-1)talk.src=talk_on.src;
+	}
+	else{	
+		if(ipcam[nCurSel].StopTalk()!=-1)	talk.src=talk_off.src;
+	}
+}
+
+function audio_onclick(){
+	  if(ipcam[nCurSel].SoundState == 0){
+		if(ipcam[nCurSel].OpenSound()!=-1)	audio.src=audio_on.src;
+	}
+	else{
+		if(ipcam[nCurSel].CloseSound()!=-1)audio.src=audio_off.src;
+	}
+}
+
+function helper_showParam(){
+		//var url = "http://192.168.1.126:81/get_camera_params.cgi?loginuse=admin&loginpas=888888&"+(new Date-0);
+		var url = getHttpHost("get_camera_params.cgi");
+		url += "&"+(new Date-0);//alert(url);
+		$.getScript(url, function(){
+		$( "#cbMaxVideoRate").val(enc_framerate);	
+		$( "#resolution").val(resolution);
+		$( "#mode").val(mode);
+		if(vbright<=0) vbright=1;
+		$( "#brightness_input" ).val(vbright);
+		if(vcontrast<=0) vcontrast=1;
+		$( "#contrast_input" ).val( vcontrast)
+		
+		$( "#osd" ).val(n_osd[nCurSel])
+		
+		
+		if(ipcam[nCurSel].RecordState == 1) 	{	record.src=record_on.src;}
+		else									{	record.src=record_off.src;}
+	
+	  	if(ipcam[nCurSel].TalkState == 1) 	{	talk.src=talk_on.src;}
+		else									{	talk.src=talk_off.src;}
+
+	  	if(ipcam[nCurSel].SoundState == 1) 	{audio.src=audio_on.src;}
+		else								{audio.src=audio_off.src;}
+
+		thumb_setpos(speed-1);//thumb_drag_end();
+
+	
+		if(flip & 0x01)
+		reversal.src=reversal_down.src;
+	else
+		reversal.src=reversal_up.src;
+   if(flip&0x02)
+      mirror.src=mirror_down.src;
+    else
+      mirror.src=mirror_up.src;
+	  
+	});
+}
+
+//焦点控件改变-----------------------------------------------------------------------------------------------------------
+function helper_ChangeFocus(index)
+{
+	for (i=0;i<9;++i){			
+		if(i == index) continue;	
+		ipcam[i].SetFocus(0);//取消其他控件焦点
+	} 
+	nCurSel = index;
+	  $("#ir").attr("src",(n_ir[nCurSel] == 0)?"images/ir.png":"images/ir_on.png");
+
+	$( "#cbMaxVideoRate").val(enc_framerate);
+	helper_showParam();
+}
+//双击-----------------------------------------------------------------------------------------------------------
+function helper_DbClick(index)
+{
+	//alert(1);
+	if ((n_x == 1)&&(resolution == 0))
+	{
+		//alert(2);
+		//1 DoubleClick
+		if(nDClick == 0)
+			ipcam[index].ShowMax();
+		//2 DoubleClick
+		if(nDClick == 1){
+			ipcam[index].ShowNormal();
+			x_onclick(n_x);
+		}
+		nDClick = nDClick + 1;
+		if(nDClick >= 2) nDClick = 0;
+	}
+	else{
+		//alert(3);
+		//1 DoubleClick
+		if(nDClick == 0)
+		{
+			for (i=0;i<9;i++){
+			ipcam[i].style.width=0;
+			ipcam[i].style.height=0;
+			}
+			//ipcam[index].style.width=w1;
+			//ipcam[index].style.height=h1;	
+			//2013.11.22 
+			if (resolution == 0) {
+                        ipcam[index].style.width = 640;
+                        ipcam[index].style.height = 462; //240;	
+                    }
+                    else if (resolution == 1) {
+                        ipcam[index].style.width = 320;
+                        ipcam[index].style.height = 240;
+                    }
+                    else {//3
+                        ipcam[index].style.width = 787;
+                        ipcam[index].style.height = 462;
+                    }
+		}
+		//2 DoubleClick
+		if(nDClick == 1){
+			ipcam[index].ShowMax();
+		}
+		//3 DoubleClick
+		if(nDClick == 2){
+			x_onclick(n_x);
+			ipcam[index].ShowNormal();
+		}
+		nDClick = nDClick + 1;
+		if(nDClick >= 3)
+		nDClick = 0;		
+	}
+
+}
+	//helper fun -- end
+	var n_alarm = new Array();
+	n_alarm[0]=n_alarm[1]=n_alarm[2]=n_alarm[3]=n_alarm[4]=n_alarm[5]=n_alarm[6]=n_alarm[7]=n_alarm[8]=0;
+	var n_alarm_num = new Array();
+	n_alarm_num[0]=n_alarm_num[1]=n_alarm_num[2]=n_alarm_num[3]=n_alarm_num[4]=n_alarm_num[5]=n_alarm_num[6]=n_alarm_num[7]=n_alarm_num[8]=30;
+	var n_alarm_rec = new Array();
+	n_alarm_rec[0]=n_alarm_rec[1]=n_alarm_rec[2]=n_alarm_rec[3]=n_alarm_rec[4]=n_alarm_rec[5]=n_alarm_rec[6]=n_alarm_rec[7]=n_alarm_rec[8]=0;
+
+function ipcam_MessageNotify(index,type,parame) {
+	switch(type){
+		///////////////////////////////////////////////////////////////
+		case 0://单击选中了某个控件
+		{
+			helper_ChangeFocus(index);
+		}
+		break;
+		///////////////////////////////////////////////////////////////
+		case 1://双击击选中了某个控件
+		{
+			helper_ChangeFocus(index);
+			helper_DbClick(index);//最大化当前窗口
+		}
+		break;
+		///////////////////////////////////////////////////////////////
+		case 2://断线重连，录像停止
+		{
+			if(ipcam[index].RecordState == 1){
+				if((ipcam[index].StopRecord()!=-1)	&&(index == nCurSel))
+					record.src=record_off.src;
+			}
+		}		
+		break;
+		///////////////////////////////////////////////////////////////
+		case 3:
+		case 4:
+		{
+			if(ipcam[index].RecordState != 1)
+			{
+				if((ipcam[nCurSel].StartRecord()!=-1)&&(index == nCurSel))
+					record.src=record_on.src;
+					
+				n_alarm_rec[index] = 1;
+			}
+			
+			//alert(index);
+			n_alarm_num[index]=30
+			n_alarm[index]=1;
+		}
+		break;
+		///////////////////////////////////////////////////////////////
+		case 5:
+		case 6:
+		{
+			n_alarm[index]=0;
+			if(index == nCurSel)
+				device_status.src=green_ball.src;
+				
+			if((ipcam[index].RecordState == 1)&&(n_alarm_rec[index]==1))
+			{
+				n_alarm_rec[index]=0;
+				if((ipcam[index].StopRecord()!=-1)	&&(index == nCurSel))
+					record.src=record_off.src;
+			}
+		}
+		break;
+	}
+}
+
+function timer_alarm(){
+	for (i=0;i<9;++i){
+		if (i == nCurSel){
+			if (n_alarm[i]==1){
+				sound_player.controls.play();
+				n_alarm_num[i]--;
+				if(n_alarm_num[i] == 0){
+					if((ipcam[index].RecordState == 1)&&(n_alarm_rec[index]==1)){
+						n_alarm_rec[index]=0;
+						if((ipcam[index].StopRecord()!=-1)	&&(index == nCurSel))
+							record.src=record_off.src;
+					}
+					n_alarm[i]=0;
+				}
+					
+				//alert(n_alarm_num[i]%2);
+				if((n_alarm_num[i]%2) == 0)
+					device_status.src=green_ball.src;
+				else
+					device_status.src=red_ball.src;
+			}
+			else{
+				device_status.src=green_ball.src;
+			}
+		}
+	}
+	setTimeout('timer_alarm()',1000);
+}
+
+function disablePtzCtl(bCanPtz){
+		$("#left").attr("disabled",bCanPtz);
+		$("#right").attr("disabled",bCanPtz);	
+		$("#up").attr("disabled",bCanPtz);	
+		$("#down").attr("disabled",bCanPtz);
+		
+		$("#vpatrol").attr("disabled",bCanPtz);
+		
+
+		$("#hpatrol").attr("disabled",bCanPtz);
+		$("#ir").attr("disabled",bCanPtz);               //红外线
+		$("#led").attr("disabled",bCanPtz);               //指示灯
+
+		$("#gocenter").attr("disabled",bCanPtz);
+
+		$("#reversal").attr("disabled",bCanPtz);
+
+		$("#mirror").attr("disabled",bCanPtz);
+		
+		$("#switchon").attr("disabled",bCanPtz);
+		$("#switchoff").attr("disabled",bCanPtz);
+
+		$("#presetno").attr("disabled",bCanPtz);
+		$("#osd").attr("disabled",bCanPtz);
+
+		$("#resolution").attr("disabled",bCanPtz);
+		$("#mode").attr("disabled",bCanPtz);
+
+
+		$("#plus_brightness").attr("disabled",bCanPtz);
+		$("#minus_brightness").attr("disabled",bCanPtz);
+
+		$("#plus_contrast").attr("disabled",bCanPtz);
+		$("#minus_contrast").attr("disabled",bCanPtz);
+
+		$("#record").attr("disabled",bCanPtz);
+		$("#snapshot").attr("disabled",bCanPtz);
+
+		$("#talk").attr("disabled",bCanPtz);
+		$("#audio").attr("disabled",bCanPtz);
+
+
+
+}
+function body_onload(){
+	$("#zip").attr("href","oPlayer.zip?loginuse="+top.cookieuser+"&loginpas="+encodeURIComponent(top.cookiepass));
+	$("#zip1").attr("href","oPlayer.zip?loginuse="+top.cookieuser+"&loginpas="+encodeURIComponent(top.cookiepass));
+	
+	timer_alarm();
+	showtime();
+	
+	
+	if(top.cookiepri == 1){
+		disablePtzCtl(true);
+		setup.style.display = 'none';
+	}
+	if(top.cookiepri == 2){
+		setup.style.display = 'none';
+	}
+	
+   //title设置-----------------------------------------------------------------------------------------------------------	
+    	gocenter.title=str_center;
+    	vpatrol.title=str_vertical_patrol;
+    	hpatrol.title=str_horizon_patrol;
+    	reversal.title=str_reversal;
+        mirror.title=str_mirror;
+        switchon.title=str_switchon;
+        switchoff.title=str_switchoff;
+        record.title=str_record;
+        snapshot.title=str_snapshot;
+        talk.title=str_talk;
+        audio.title=str_audio;
+        setup.title=str_setup;
+        ir.title=str_ir;
+		up_left.title=str_Ptz_leftUpText;
+		up_right.title=str_Ptz_rightUpText;
+		bot_left.title=str_Ptz_leftDownText;
+		bot_right.title=str_Ptz_rightDownText;
+		huifu.title=str_default;
+
+        //led.title=str_led_mode;    //没有LED
+    //title设置-----------------------------------------------------------------------------------------------------------	
+	
+	//	alias_span.innerHTML=alias;
+//	host_span.innerHTML=location.host;
+	
+    if(top.cookiepri == 1){
+    	id_pos_slow.style.display = 'none';
+        id_pos_line.style.display = 'none';
+        id_pos_panspeed.style.display = 'none';
+        id_pos_fast.style.display = 'none';
+        shezhi.style.display = 'none';
+    }
+    else{
+        id_pos_slow.style.display = '';
+		id_pos_line.style.display = '';
+		id_pos_panspeed.style.display = '';
+		id_pos_fast.style.display = '';
+		shezhi.style.display = '';
+		///pan_speed = 10 - ptz_patrol_rate / 2;
+		///thumb_setpos(pan_speed);
+   }
+
+
+	var port;
+	if(location.port=='')
+	port=80;
+	else
+	port=location.port;
+
+	
+	x1.src = check_on1.src;
+	current=0;
+	ipcam[0].SetFocus(true);
+	//alias_span.innerText=cameras.alias[0];
+	//host_span.innerText=cameras.host[0];
+	
+	nCurSel=0;
+	x_onclick(1);
+	ipcam[0].SetFocus(1);
+	var i = ipcam[0].PlayVideo(top.cookieuser,	top.cookiepass,	location.hostname, port ,3,0);
+	//if(i<0)
+	//alert(str_failtoplayvideo);//open video error
+	if(dev2_host != '') {  ipcam[1].PlayVideo(dev2_user,	dev2_pwd,	dev2_host, dev2_port ,3,0);}
+	if(dev3_host != '') {  ipcam[2].PlayVideo(dev3_user,	dev3_pwd,	dev3_host, dev3_port ,3,0);}
+	if(dev4_host != '') {  ipcam[3].PlayVideo(dev4_user,	dev4_pwd,	dev4_host, dev4_port ,3,0);}
+	if(dev5_host != '') {  ipcam[4].PlayVideo(dev5_user,	dev5_pwd,	dev5_host, dev5_port ,3,0);}
+	if(dev6_host != '') {  ipcam[5].PlayVideo(dev6_user,	dev6_pwd,	dev6_host, dev6_port ,3,0);}
+	if(dev7_host != '') {  ipcam[6].PlayVideo(dev7_user,	dev7_pwd,	dev7_host, dev7_port ,3,0);}
+	if(dev8_host != '') {  ipcam[7].PlayVideo(dev8_user,	dev8_pwd,	dev8_host, dev8_port ,3,0);}
+	if(dev9_host != '') {  ipcam[8].PlayVideo(dev9_user,	dev9_pwd,	dev9_host, dev9_port ,3,0);}
+}
+
+function body_onunload(){
+	$('#ir').attr('alt', 'IR');    //------------------------------------------------------------------------
+}
+function showtime(){
+  var date = new Date();
+  var now = "";
+  now = date.getFullYear()+"-";
+  if(date.getMonth() > 8)
+    now = now +(date.getMonth()+1)+"-";
+  else
+    now = now +"0" +(date.getMonth()+1)+"-";
+  if(date.getDate() > 9)
+  	now = now + date.getDate();
+  else
+  	now = now + "0" + date.getDate();
+  date_span.innerHTML = now;
+  	
+  if(date.getHours() > 9)
+    now = date.getHours()+":";
+  else
+    now = "0"+date.getHours()+":";
+  if(date.getMinutes() > 9)
+    now = now + date.getMinutes()+ ":";
+  else
+    now = now + "0"+date.getMinutes()+":";
+  if(date.getSeconds() > 9)
+    now = now + date.getSeconds();
+  else
+    now = now +"0"+date.getSeconds();
+  time_span.innerHTML = now;
+  setTimeout("showtime()",1000);
+}
+
+//2013.11.22增加的变焦功能-----
+
+function ptz_onmouseup(i)
+{
+
+	if(i == 17 ) {$("#n_zoom_b_img").attr("src","images/n_zoom_b_up.png");}
+	if(i == 18 ) {$("#n_zoom_a_img").attr("src","images/n_zoom_a_up.png");}
+	if(i == 19 ) {$("#n_zoom_b_img_f").attr("src","images/n_zoom_b_up.png");}
+	if(i == 20 ) {$("#n_zoom_a_img_f").attr("src","images/n_zoom_a_up.png");}
+
+}
+function ptz_onmousedown(i)
+{
+	if(i == 15 ) {
+    	if(n_ir[nCurSel] == 0){	
+    	   n_ir[nCurSel] = 1;$("#ir").attr("src","images/ir_on.png"); 
+           camera_control(14,1);
+        }
+    	else{			
+    	   n_ir[nCurSel] = 0;$("#ir").attr("src","images/ir.png"); 
+           camera_control(14,0);
+        }
+	}
+
+	if(i == 18 ) {$("#n_zoom_a_img").attr("src","images/n_zoom_a_down.png");
+	}
+	if(i == 17 ) {$("#n_zoom_b_img").attr("src","images/n_zoom_b_down.png");
+	}
+	
+	if(i == 20 ) {$("#n_zoom_a_img_f").attr("src","images/n_zoom_a_down.png");
+	}
+	if(i == 19 ) {$("#n_zoom_b_img_f").attr("src","images/n_zoom_b_down.png");
+	}
+	
+
+}
+//---------------------------------
+</script>
+<SCRIPT FOR="ipcam" EVENT="MessageNotify(type,parame)">ipcam_MessageNotify(this.name,type,parame)</SCRIPT>
+
+<body onLoad="body_onload()" onUnload="body_onunload()">
+<table width="1005" border="0" cellspacing="0" cellpadding="0" align="center" style=" margin-top:5px;">
+  <tr>
+    <td height="577">
+    	<div class="kleft">
+        	<div class="kleft_logo">
+            	<div class="kleft_logo_div">IP Camera</div>
+            </div>
+            <!--云台-->
+            <div class="kleft_yuntai">
+                <div ><img src="images/leftup_up.png" id="up_left" onMouseDown="up_left_onmousedown()" onMouseUp="up_left_onmouseup()"  /><img id="up" src="images/up_up.png" ondragstart="return false" onMouseDown="up_onmousedown()" onMouseUp="up_onmouseup()" /><img src="images/rightup_up.png"  id="up_right" onMouseDown="up_right_onmousedown()" onMouseUp="up_right_onmouseup()"  /></div>
+                <div><img id="left" src="images/left_up.png" ondragstart="return false" onMouseDown="left_onmousedown()" onMouseUp="left_onmouseup()"><img id="gocenter" src="images/center.png"  ondragstart="return false" onClick="decoder_control(PTZ_CENTER)"><img id="right" src="images/right_up.png" ondragstart="return false" onMouseDown="right_onmousedown()" onMouseUp="right_onmouseup()"></div>
+                <div><img src="images/leftdown_up.png" id="bot_left" onMouseDown="bot_left_onmousedown()" onMouseUp="bot_left_onmouseup()"  /><img id="down" src="images/down_up.png" ondragstart="return false" onMouseDown="down_onmousedown()" onMouseUp="down_onmouseup()"><img src="images/rightdown_up.png"  id="bot_right" onMouseDown="bot_right_onmousedown()" onMouseUp="bot_right_onmouseup()"   /></div>
+            </div>
+            
+            
+      <div class="kleft_canshu">
+	 			<!--------变焦-->
+            	<div class="kleft_canshu_bianjiao">
+				  	
+                	<img  src="images/n_zoom_a_up.png"  style="width:22px; height:22px" id="n_zoom_a_img" onMouseDown="camera_control(18,1);ptz_onmousedown(18)" onMouseUp="camera_control(18,0);ptz_onmouseup(18)" ondragstart="return false">
+                		<div class="kleft_canshu_bianjiao_read"><strong>Zoom</strong></div>
+                	<img  src="images/n_zoom_b_up.png" style="width:22px; height:22px" id="n_zoom_b_img" onMouseDown="camera_control(17,1);ptz_onmousedown(17)" onMouseUp="camera_control(17,0);ptz_onmouseup(17)" ondragstart="return false">
+           		</div>
+                
+                <!--------聚焦-->
+            	<div class="kleft_canshu_bianjiao" style="margin-top:10px">
+				  	
+                	<img  src="images/n_zoom_a_up.png" style="width:22px; height:22px"  id="n_zoom_a_img_f" onMouseDown="camera_control(20,1);ptz_onmousedown(20)" onMouseUp="camera_control(20,0);ptz_onmouseup(20)" ondragstart="return false">
+                		<div class="kleft_canshu_bianjiao_read"><strong style="color: #2A2A2A">Focus</strong></div>
+                	<img  src="images/n_zoom_b_up.png" style="width:22px; height:22px" id="n_zoom_b_img_f" onMouseDown="camera_control(19,1);ptz_onmousedown(19)" onMouseUp="camera_control(19,0);ptz_onmouseup(19)" ondragstart="return false">
+           		</div>
+
+	  <div id="id_pos_panspeed">
+      	<table border="0" height =18 cellpadding="0" cellspacing="0">
+          <tr onMouseDown="return thumb_drag_start(id_pos_panspeed)">
+            <td><img src="images/bb.gif" alt="PTZ Speed"></td>
+          </tr>
+      </table>
+      </div>
+                
+                <!--设置速度---->
+                <div class="kleft_sudu" style="margin-top:-10px">
+                                   <div class="kleft_sudu_s" id="id_pos_slow" style=" float:left; text-align:center"><script>document.write(str_Ptz_SlowText);</script></div>
+                            <div id="id_pos_line" style=" float:left; width:80px; height:8px; margin-top:8px; margin-left:12px;"><img id="line" src="images/line.gif" style="cursor:auto" ondragstart="return false"></div>
+                            <div class="kleft_sudu_s" id="id_pos_fast" style=" float:right; text-align:center; padding-right:5px;"><script>document.write(str_Ptz_FastText);</script></div>
+                           
+                </div>
+
+
+
+                
+                <!--这里是按钮---->
+                <div class="kleft_anniu">
+                	<!--这个功能暂时没有-->
+                	<img id="device_status" src="images/gray.png" />
+                    <img id="hpatrol" src="images/hpatrol_up.png" ondragstart="return false" onClick="hpatrol_onclick()">
+                    <img id="vpatrol" src="images/vpatrol_up.png" ondragstart="return false" onClick="vpatrol_onclick()">
+                    <img id="ir" src="images/ir.png" ondragstart="return false"  onMouseDown="ptz_onmousedown(15)">
+                    
+                    <img id="reversal" src="images/reversal_up.png" ondragstart="return false" onClick="image_reversal_onclick()" />
+                    <img id="mirror" src="images/mirror_up.png" ondragstart="return false" onClick="image_mirror_onclick()" />
+                    <!--暂时没有下面这两种功能-->
+                    <img id="switchon" src="images/switchon_up.png" ondragstart="return false" onClick="image_switchon_onclick()" />
+                    <img id="switchoff" src="images/switchoff_up.png" ondragstart="return false" onClick="image_switchoff_onclick()" />
+                </div>
+                
+                 <!--这里是分辨率---->
+                 <div class="kleft_fenbianlv">
+                 	<div class="kleft_fenbianlv_txt">
+                    	<strong><script>document.write(str_resolution);</script></strong>
+                    </div>
+                    <div class="kleft_fenbianlv_onChange">
+                    	<select style="width:72; height:21; float:right" id="resolution" onChange="OnResolutionChanged(this.value)">
+                            <option value="1">320*240</option>
+                            <option value="0">640*480</option>
+							<option value="3">720P</option>
+                        </select>
+                    </div>
+                 </div>
+                 
+                 <!--这里要帧率---->
+                 <div class="kleft_fenbianlv">
+                 	<div class="kleft_fenbianlv_txt">
+                    	<strong><script>document.write(str_MaxRate);</script></strong>
+                    </div>
+                    <div class="kleft_fenbianlv_onChange">
+<select style="width:72; height:21; float:right"  name="cbMaxVideoRate" id="cbMaxVideoRate" onChange="camera_control(6,this.value);">
+                                                <option value='30'>30</option>
+                                                <option value='29'>29</option>
+                                                <option value='28'>28</option>
+                                                <option value='27'>27</option>
+                                                <option value='26'>26</option>
+                                                <option value='25'>25</option>
+                                                <option value='24'>24</option>
+                                                <option value='23'>23</option>
+                                                <option value='22'>22</option>
+                                                <option value='21'>21</option>
+                                                <option value='20'>20</option>
+                                                <option value='19'>19</option>
+                                                <option value='18'>18</option>
+                                                <option value='17'>17</option>
+                                                <option value='16'>16</option>
+                                                <option value='15'>15</option>
+                                                <option value='14'>14</option>
+                                                <option value='13'>13</option>
+                                                <option value='12'>12</option>
+                                                <option value='11'>11</option>
+                                                <option value='10'>10</option>
+                                                <option value='9'>9</option>
+                                                <option value='8'>8</option>
+                                                <option value='7'>7</option>
+                                                <option value='6'>6</option>
+                                                <option value='5'>5</option>
+                                                <option value='4'>4</option>
+                                                <option value='3'>3</option>
+                                                <option value='2'>2</option>
+                                                <option value='1'>1</option>
+                                            </select>
+                    </div>
+                 </div>
+                 
+                 
+<!--这里是模式---->
+                 <div class="kleft_fenbianlv">
+                 	<div class="kleft_fenbianlv_txt">
+                    	<strong><script>document.write(str_mode);</script></strong>
+                    </div>
+                    <div class="kleft_fenbianlv_onChange">
+                    	<select style="width:72; height:21;float:right" id="mode" onChange="camera_control(3,this.value);">
+                            <option value="0">50 HZ</option>
+                            <option value="1">60 HZ</option>
+                        </select>
+                    </div>
+                 </div>
+                 
+                 <!--这里是频率---->
+                 <div class="kleft_fenbianlv">
+                 	<div class="kleft_fenbianlv_txt">
+                    	<strong>OSD</strong>
+                    </div>
+                    <div class="kleft_fenbianlv_onChange">
+                    	<select style="width:72; height:21;float:right" class="s1" id="osd" onChange="osd_onchange()"><script>document.write(str_osd_option__a);</script></select>
+                    </div>
+                 </div>
+                 
+                 <!--这里是亮度---->
+                 <div class="kleft_fenbianlv">
+                 	<div class="kleft_fenbianlv_txt">
+                    	<strong><script>document.write(str_brightness);</script></strong>
+                    </div>
+                    <div  class="kleft_fenbianlv_onChange" style="text-align:right">
+                    	<img id="minus_brightness"  style="width:16px; height:16px"   src="images/plus_up.png" ondragstart="return false" onClick="minus_brightness_onclick()"  onMouseDown="this.src=minus_down.src" onMouseUp="this.src=minus_up.src"  />
+                        <input id="brightness_input" readonly maxlength="2" class="s3" size="4">
+                        <img id="plus_brightness" src="images/minus_up.png"  style="width:16px; height:16px"    ondragstart="return false" onClick="plus_brightness_onclick()" onMouseDown="this.src=plus_down.src" onMouseUp="this.src=plus_up.src"  />
+                        
+                    </div>
+                 </div>
+                 
+                 <!--这里是对比度--->
+                 <div class="kleft_fenbianlv">
+                 	<div class="kleft_fenbianlv_txt">
+                    	<strong><script>document.write(str_contrast);</script></strong>
+                    </div>
+                    <div class="kleft_fenbianlv_onChange" style="text-align:right">
+                    	
+                        <img id="minus_contrast"  style="width:16px; height:16px"  src="images/plus_up.png" ondragstart="return false" onClick="minus_contrast_onclick()"  onMouseDown="this.src=minus_down.src" onMouseUp="this.src=minus_up.src"  >
+                        <input id="contrast_input" readonly maxlength="2" class="s3" size="4">
+                        <img id="plus_contrast" style="width:16px; height:16px"    src="images/minus_up.png" ondragstart="return false" onClick="plus_contrast_onclick()" onMouseDown="this.src=plus_down.src" onMouseUp="this.src=plus_up.src"  >
+                    </div>
+                 </div>
+                 
+                 
+                 <!--这里是预置位---->
+                 <div class="kleft_fenbianlv">
+                 	<div class="kleft_fenbianlv_txt_b">
+                    	<strong>
+                   	  <script>document.write(str_PresetTitle);</script></strong>
+                   </div>
+                    <select style="width:35; height:21" id="presetno">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                    </select>&nbsp;
+                    <a href="javascript:preset_set();"><span style="color:#CCC; font-size:12px"><script>document.write(str_SetPreset);</script></span></a>&nbsp;
+                    <a href="javascript:preset_call();"><span style="color:#CCC; font-size:12px"><script>document.write(str_CallPreset);</script></span></a>
+                 </div>
+              
+            </div>
+        	<div id="shezhi"><img src="images/btn_shezhi.png" style="float:left; margin:28px 0 0 74px;"  id="setup" width="30" height="30" onClick="setup_onclick()" /></div>
+        </div>
+        <div class="kright">
+        	<table width="100%" height="577" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td colspan="2" height="50" background="images/bt.png">
+                	<div class="kright_bt" style="display:none">
+                    	<ul>
+                        	<li>参数设置</li>
+                            <li>网络设置</li>
+                            <li>本地设置</li>
+                            <li>报警设置</li>
+                        </ul>
+                    </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="vertical-align:middle;">
+                <div class="kright_live">
+                	
+<table width="787" height="469" style="vertical-align:middle;" align="center">
+<tr>
+<td style="background:#000; text-align:center; vertical-align:middle;" class="rect_left">
+<div style=" text-align:center;">
+
+
+
+                    
+                   <OBJECT id=ipcam name = 0 style="LEFT: 0px; TOP: 0px"  height=240 width=320 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT>
+                   <OBJECT id=ipcam name = 1 style="LEFT: 0px; TOP: 0px"  height=0 width=0 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT>
+                   <OBJECT id=ipcam name = 2 style="LEFT: 0px; TOP: 0px"  height=0 width=0 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT>
+                   <OBJECT id=ipcam name = 3 style="LEFT: 0px; TOP: 0px"  height=0 width=0 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT>
+                   <OBJECT id=ipcam name = 4 style="LEFT: 0px; TOP: 0px"  height=0 width=0 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT>
+                   <OBJECT id=ipcam name = 5 style="LEFT: 0px; TOP: 0px"  height=0 width=0 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT>
+                   <OBJECT id=ipcam name = 6 style="LEFT: 0px; TOP: 0px"  height=0 width=0 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT>
+                   <OBJECT id=ipcam name = 7 style="LEFT: 0px; TOP: 0px"  height=0 width=0 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT><OBJECT id=ipcam name = 8 style="LEFT: 0px; TOP: 0px"  height=0 width=0 classid=clsid:91D47772-CF16-44B1-95C0-AE6C91284640 VIEWASTEXT></OBJECT>
+                   </div>
+
+</td>
+</tr>
+</table>
+                    <script>
+                    try{
+                    if(ipcam[0].RecordState==undefined)
+                    {
+                    ipcam[0].style.width=0;
+                            ipcam[0].style.height=0;
+                        document.write("<FONT COLOR=red SIZE=4>" + str_ocx_til + "&nbsp;&nbsp;<a  id='zip' href='#' style='color:#F08200;' >" + str_here + "</a></FONT>");
+                    }
+                    }
+                    catch(exception){
+                        ipcam[0].style.width=0;
+                            ipcam[0].style.height=0;		
+                        document.write("<FONT COLOR=red SIZE=4>" + str_ocx_til + "&nbsp;&nbsp;<a id='zip1' href='#' style='color:#F08200;'>" + str_here + "</a></FONT>");
+                    }
+                    </script>
+                </div>
+                </td>
+                <td><img src="images/br.png" /></td>
+              </tr>
+              <tr>
+                <td colspan="2" height="50">
+                <!--底部控制按钮-->
+                	<div class="kright_live_b" style="width:814px">
+                  <div style="width:150px; height:30px; float:left; line-height:30px; margin-left:10px; display:none">
+                            <span id="date_span" style="font-size:12px;color:yellow; margin-right:15px; display:none"></span>
+                            <span id="time_span" style="font-size:12px;color:yellow;display:none"></span>
+                            <b id="alias_span" style="font-size:12px;color: #96A5F8;margin-right:15px">ipcam</b>
+                            <span id="host_span" style="font-size:12px;color: #D2152D;">192.168.1.1:90</span>
+                        </div>
+             		<!--恢复出厂设置2013.11.22-->
+                    <img  src="images/icon2.png" id="huifu"  onMouseDown="this.src=huifu_down.src" onMouseUp="this.src=huifu_up.src"  class="cs"  ondragstart="return false" onClick="javascript:camera_control(7,0);setTimeout('helper_showParam()',1000);"  style=" margin-left: 18px;"/>
+                 
+                     <!--录像-->
+                     <img  src="images/record_off.png"  class="cs" id="record"  ondragstart="return false" onClick="record_onclick()"  style=" margin-left: 18px;"/>
+                     <!--拍照-->
+                     <img src="images/snapshot_up.png" id="snapshot" style="margin-left:18px" ondragstart="return false" onClick="snapshot_onclick()" onMouseDown="this.src=snapshot_down.src" onMouseUp="this.src=snapshot_up.src"/> 
+                     <!--监听-->
+                     <img  src="images/audio_off.png"   id="audio"ondragstart="return false" onClick="audio_onclick()"style="margin-left:18px"  />
+      				 <!--对讲-->
+                     <img  src="images/talk_off.png"  id="talk" ondragstart="return false" onClick="talk_onclick()" style="margin-left:18px" />
+                     <!---OSD-->
+                     <!--<img src="images/osd01.png"  class="cs" id="osd"  onmousedown="ptz_onmousedown(16)" style="margin-left:18px"  />
+                     <!--1-4-9画面控制-->
+                    <img id="x1" style="margin-left:18px" src="images/x1_off.png" ondragstart="return false" onClick="x_onclick(1)">
+                	<img id="x4" style="margin-left:18px" src="images/x4_off.png" ondragstart="return false" onClick="x_onclick(4)">
+                	 <img id="x9" style="margin-left:18px" src="images/x9_off.png" ondragstart="return false" onClick="x_onclick(9)">
+                	 <!--录像回放-->
+                	<img src="images/tf_ka.png" style="margin-left:18px; display:none" id="bofang_tf" onClick="bofang_tf()" />
+                    </div>
+                </td>
+              </tr>
+            </table>
+
+        </div>
+    </td>
+  </tr>
+</table>
+
+<img id="huifu_down" src="images/icon1.png" class="ih">
+<img id="huifu_up" src="images/icon2.png" class="ih">
+
+<img id="up_left_down" src="images/leftup_down.png" class="ih">
+<img id="up_left_up" src="images/leftup_up.png" class="ih">
+<img id="up_right_down" src="images/rightup_down.png" class="ih">
+<img id="up_right_up" src="images/rightup_up.png" class="ih">
+<img id="bot_right_down" src="images/rightdown_down.png" class="ih">
+<img id="bot_right_up" src="images/rightdown_up.png" class="ih">
+<img id="bot_left_down" src="images/leftdown_down.png" class="ih">
+<img id="bot_left_up" src="images/leftdown_up.png" class="ih">
+
+<img id="up_up" src="images/up_up.png" class="ih">
+<img id="up_down" src="images/up_down.png" class="ih">
+<img id="down_up" src="images/down_up.png" class="ih">
+<img id="down_down" src="images/down_down.png" class="ih">
+<img id="left_up" src="images/left_up.png" class="ih">
+<img id="left_down" src="images/left_down.png" class="ih">
+<img id="right_up" src="images/right_up.png" class="ih">
+<img id="right_down" src="images/right_down.png" class="ih">
+<img id="vpatrol_up" src="images/vpatrol_up.png" class="ih">
+<img id="vpatrol_down" src="images/vpatrol_down.png" class="ih">
+<img id="hpatrol_up" src="images/hpatrol_up.png" class="ih">
+<img id="hpatrol_down" src="images/hpatrol_down.png" class="ih">
+<img id="reversal_up" src="images/reversal_up.png" class="ih">
+<img id="reversal_down" src="images/reversal_down.png" class="ih">
+<img id="mirror_up" src="images/mirror_up.png" class="ih">
+<img id="mirror_down" src="images/mirror_down.png" class="ih">
+<img id="switchon_up" src="images/switchon_up.png" class="ih">
+<img id="switchon_down" src="images/switchon_down.png" class="ih">
+<img id="switchoff_up" src="images/switchoff_up.png" class="ih">
+<img id="switchoff_down" src="images/switchoff_down.png" class="ih">
+<img id="record_off" src="images/record_off.png" class="ih">
+<img id="record_on" src="images/record_on.png" class="ih">
+<img id="snapshot_up" src="images/snapshot_up.png" class="ih">
+<img id="snapshot_down" src="images/snapshot_down.png" class="ih">
+<img id="talk_off" src="images/talk_off.png" class="ih">
+<img id="talk_on" src="images/talk_on.png" class="ih">
+<img id="audio_off" src="images/audio_off.png" class="ih">
+<img id="audio_on" src="images/audio_on.png" class="ih">
+
+<img id="check_off1" src="images/x1_off.png" class="ih">
+<img id="check_on1" src="images/x1_on.png" class="ih">
+<img id="check_off4" src="images/x4_off.png" class="ih">
+<img id="check_on4" src="images/x4_on.png" class="ih">
+<img id="check_off9" src="images/x9_off.png" class="ih">
+<img id="check_on9" src="images/x9_on.png" class="ih">
+
+<img id="minus_up" src="images/plus_up.png" class="ih">
+<img id="plus_down" src="images/plus_down.png" class="ih">
+<img id="plus_up" src="images/minus_up.png" class="ih">
+<img id="minus_down" src="images/minus_down.png" class="ih">
+<img id="gray_ball" src="images/gray.png" class="ih">
+<img id="red_ball" src="images/red.png" class="ih">
+<img id="yellow_ball" src="images/yellow.png" class="ih">
+<img id="green_ball" src="images/green.png" class="ih">
+<object id="sound_player" CLASSID="CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6" type="application/x-oleobject" width="0" height="0"><param name="url" value="images/alarm.wav"><param name="autoStart" value="false"><param name="playCount" value="1"><param name="rate" value="1"></object>
+<iframe id="action_zone" name="action_zone" style="display:none"></iframe>
+<iframe id="greenled_zone" name="greenled_zone" style="display:none"></iframe>
+<iframe id="center_onstart_zone" name="center_onstart_zone" style="display:none"></iframe>
+</body>
+</html>

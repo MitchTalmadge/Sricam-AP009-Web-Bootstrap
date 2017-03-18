@@ -1,0 +1,132 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="style.css" type="text/css">
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="login.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<title></title>
+</head>
+<script>
+    function set_language(language){
+    	top.language = language;
+    	location.reload();
+    }
+    
+    function signin_activex(){
+    browser=0;
+    location='monitor.htm';
+    }
+    
+    function signin_serverpush(){
+    browser=1;
+    location='serverpush.htm';
+    }
+    
+    function signin_snapmotion(){
+    browser=2
+    location='mobile.htm';
+    }
+    
+    /*function signin_recordfile(){
+         browser=3;
+         location='recordplay.htm';
+     }*/
+     
+    function body_onload(){
+    	//alert(loginuser);
+    	top.cookieuser = loginuser;
+    	top.cookiepass = loginpass;
+    	top.cookiepri = pri;
+    	top.varRebootInfo = str_rebootinfo;
+    	$("#zip").attr("href","oPlayer.zip?loginuse="+top.cookieuser+"&loginpas="+top.cookiepass);
+    }
+</script>
+<body onLoad="body_onload()"  style="background:#425056">
+<table  width="1000" height="30" align="center"  cellpadding="0" cellspacing="0"  style="margin:0 auto; padding:0;">
+  <tr>
+    <td class="rect_bottom">
+    	<a href="javascript:set_language(0)" class="f12w m_left_10"></a> 
+      <font size="3" color="white">|</font>	
+      <a href="javascript:set_language(0)" class="f12w m_left_10">English</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(5)" class="f12w m_left_10">Polski</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(1)" class="f12w m_left_10">Spanish</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(2)" class="f12w m_left_10">Deutsch</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(3)" class="f12w m_left_10">French</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(4)" class="f12w m_left_10">Italian</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(6)" class="f12w m_left_10">Korean</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(9)" class="f12w m_left_10">Swedish</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(7)" class="f12w m_left_10">简体中文</a> 
+      <font size="3" color="white">|</font>
+      <a href="javascript:set_language(8)" class="f12w m_left_10">繁體中文</a>
+      <font size="3" color="white">|</font> 
+      <a id="zip" href='oPlayer.zip?' style="color:#F08200; font-size: 12px; font-weight: bold; ">
+        <script>document.write(str_ocx_down_02);</script>
+      </a>
+    </td>
+  </tr>
+  <tr>
+  	<td>
+  <table width="1000" align="center" style=" margin-top:60px">
+        	<tr>
+            	<td style=" color:#FFF; text-align:center">
+              <h1>IP Camera</h1></td>
+            </tr>
+            <tr>
+            	<td>
+                	<div class="index_menu_ie">
+                    	<div class="index_h1">
+                        	<a href="javascript:signin_activex()" class="f18">
+                            	<strong><script>document.write(str_mode_activex);</script></strong>
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+            	<td>
+                	<div class="index_menu_firefox">
+                    	<div class="index_h1">
+                        	<a href="javascript:signin_serverpush()" class="f18">
+                            	<strong><script>document.write(str_mode_serverpush);</script></strong>
+                            </a>
+                        </div>
+                   </div>
+                </td>
+            </tr>
+            <tr>
+            	<td>
+                	<div class="index_menu_phone">
+                    	<div class="index_h1">
+                        	<a href="javascript:signin_snapmotion()" class="f18">
+                            	<strong><script>document.write(str_mode_Mobile);</script></strong>
+                            </a>
+                        </div>
+                   </div>
+                </td>
+            </tr>
+            <tr>
+            	<td>
+                	<span style=" font-size:14px; color:#FFF; font-weight:600"><script>document.write(str_index1_02);</script><br/>
+<script>document.write(str_index2_02);</script></span>
+                </td>
+            </tr>
+            <tr>
+            	<td></td>
+            </tr>
+        </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

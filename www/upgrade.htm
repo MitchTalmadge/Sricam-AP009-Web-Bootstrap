@@ -1,0 +1,78 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="login.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+</script>
+</head>
+<body >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_upgrade_firmware);</script> 
+</strong></td>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_restore_factory);</script></td>
+<td>&nbsp;&nbsp;
+<button id="set1" onClick="javascript:restore_factory();"> 
+<script>document.write(str_restore_factory);</script> 
+</button></td>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_reboot);</script></td>
+<td>&nbsp;&nbsp;
+<button id="set2" onClick="javascript:reboot();"> 
+<script>document.write(str_reboot);</script> 
+</button></td>
+</tr>
+<td width="30%" class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_upgrade_swware);</script></td>
+<form action="upgrade_firmware.cgi?next_url=rebootme.htm" method="post" enctype="multipart/form-data">
+<td>&nbsp;&nbsp;
+<input type="file" name="file1" id="file1" size="20" />  
+&nbsp;&nbsp;
+<button id="set3" onClick="if($('#file1').val()=='') return false;top.reboot_seconds=45;form.submit();"> 
+<script>document.write(str_upgrade);</script> 
+</button></td>
+</form>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp; 
+<script>document.write(str_upgrade_awware);</script></td>
+<form action="upgrade_htmls.cgi?next_url=reboot.htm" method="post" enctype="multipart/form-data">
+<td >&nbsp;&nbsp;
+<input type="file" name="file1" id="file2" size="20">
+&nbsp;&nbsp;
+<button id="set4" onClick="javascript:if($('#file2').val()=='') return false;top.reboot_seconds=45;form.submit();"> 
+<script>document.write(str_upgrade);</script> 
+</button></td>
+</form>
+</tr>
+</table></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-upgrade", parent.document).addClass("selected");
+if(top.cookiepri != 255)  {
+$("#set1").hide();$("#set2").hide();$("#set3").hide();$("#set4").hide();$
+}
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

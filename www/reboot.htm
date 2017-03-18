@@ -1,0 +1,72 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<style>
+.layout-grid-frame {
+width: 700px;
+font-size: 12px;
+}
+.summaryTable {
+font-size: 12px;
+border-top-width: 1px;
+border-left-width: 1px;
+border-top-style: solid;
+border-left-style: solid;
+border-top-color: #666666;
+border-left-color: #666666;
+}
+.summaryTable tr {
+HEIGHT: 22px;
+}
+.summaryTable td {
+vertical-align: middle;
+border-right-width: 1px;
+border-bottom-width: 1px;
+border-right-style: solid;
+border-bottom-style: solid;
+border-right-color: #666666;
+border-bottom-color: #666666;
+}
+</style>
+<script>
+var seconds=60;
+function timer()
+{
+seconds--;
+//$("#left_seconds").html( "&nbsp;&nbsp;"+seconds);
+left_seconds.innerHTML='&nbsp;&nbsp;'+seconds;
+if (!seconds)
+top.location='index.htm';
+else
+setTimeout('timer()',1000);	
+}
+function body_onload()
+{
+top.cookieuser = '';
+top.cookiepass = '';
+
+seconds=60;
+//$("#left_seconds").html( "&nbsp;&nbsp;"+seconds);
+left_seconds.innerHTML='&nbsp;&nbsp;'+seconds;
+setTimeout('timer()',1000);
+}
+</script>
+</head>
+<body onLoad="body_onload()">
+<table width="550" class="" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal"><table width="100%" class="summaryTable">
+<tr valign="top">
+<td style="font-size:14px;padding-left:10px;padding-right:10px;padding-top:20px;padding-bottom:20px;background-color:linen">
+<div>
+<div  style="float:left;"><script>document.write(top.varRebootInfo);</script></div>
+<div id="left_seconds"  style="float:left;"></div>
+</div>
+</td>
+</tr>
+</table></td>
+</tr>
+</table>
+</body>
+</html>

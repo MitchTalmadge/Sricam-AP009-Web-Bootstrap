@@ -1,0 +1,62 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_alarmlog.cgi"></script>
+<!--<script src="get_log.cgi"></script>-->
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+
+function clearLog()
+{
+var url;
+url='set_alarmlogclr.cgi?next_url=log.htm';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+location=url;
+}
+function body_onload()
+{
+log.value=log_text;
+document.getElementById('log').style.height = "451px";
+}
+
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal">
+<table width="100%" class="summaryTable">
+<tr>
+<td class="TitleBgcolor"><strong> 
+<script>document.write(str_log);</script> 
+</strong></td>
+</tr>
+<tr>
+<td><textarea id="log" name="log" readonly style="width:100%;height:450px" rows="5"></textarea></td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="clearLog()"> <script>document.write(str_log_clr);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-log", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

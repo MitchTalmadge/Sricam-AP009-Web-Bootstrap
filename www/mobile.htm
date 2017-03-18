@@ -1,0 +1,131 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="public.cgi"></script>
+<script src="get_status.cgi"></script>
+<script src="login.cgi"></script>
+<script src="get_camera_params.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script language="Javascript">
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function Click(){ window.event.returnValue=false;}
+
+var g_ptzcmd=-1;
+function OnPtzMouseDown()
+{
+var url;
+url='decoder_control.cgi?';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&command=2&onestep=1';
+url+='&' + new Date().getTime() + Math.random();
+$.getScript(url);
+}
+
+function OnPtzMouseUp()
+{
+var url;
+url='decoder_control.cgi?';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&command=0&onestep=1';
+url+='&' + new Date().getTime() + Math.random();
+$.getScript(url);
+}
+
+function OnPtzMouseLeft()
+{
+var url;
+url='decoder_control.cgi?';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&command=4&onestep=1';
+url+='&' + new Date().getTime() + Math.random();
+$.getScript(url);
+}
+
+function OnPtzMouseRight()
+{
+var url;
+url='decoder_control.cgi?';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&command=6&onestep=1';
+url+='&' + new Date().getTime() + Math.random();
+$.getScript(url);
+}
+
+function OnPtzMouseStop()
+{
+var url;
+url='decoder_control.cgi?';
+url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+url+='&command=1';
+url+='&' + new Date().getTime() + Math.random();
+$.getScript(url);
+}
+
+//var imgsrc = "http://192.168.1.107:81/snapshot.cgi?user=admin&pwd=";
+var imgsrc;// = "snapshot.cgi?user="+top.cookieuser+"&pwd="+top.cookiepass;
+function body_onload()
+{
+$("#btnup").val(str_Ptz_UpText);
+$("#btnleft").val(str_Ptz_LeftText);
+//$("#btnstop").val(str_Ptz_StopText);
+$("#btnright").val(str_Ptz_RightText);
+$("#btndown").val(str_Ptz_DownText);
+
+imgsrc = "snapshot.cgi?user="+top.cookieuser+"&pwd="+top.cookiepass;
+//alert(imgsrc);
+//$("#snapshot").attr("src",imgsrc);
+window.setTimeout('PlayImg();',20);
+}
+
+function PlayImg()
+{
+	var append = '&' + new Date().getTime() + Math.random();
+
+	var img = document.createElement("img");
+	//img.src = imgsrc+append;
+	//alert(append);
+	img.onload = function () {
+		//alert(img.src);
+			var div = document.getElementById("image");
+			while (div.childNodes.length > 0)
+					div.removeChild(div.childNodes[0]);
+			div.appendChild(img);
+			
+			window.setTimeout("PlayImg();", 20);
+	}
+	img.onerror = function () {
+			window.setTimeout("PlayImg();", 10);
+	}
+	img.src = imgsrc+append;
+}
+
+</script>
+</head>
+<body onLoad="body_onload()">
+<table align="center">
+<tr><td align="center" colspan="3">
+<div id="image"></div></td></tr>
+<tr>
+<td align="center"><input id="btnup" type="button" value="Up" onClick="OnPtzMouseUp()"></td>
+</tr>
+<tr>
+<td align="center">
+<input id="btnleft" type="button" value="Left" onClick="OnPtzMouseLeft()"/>
+<!--<input id="btnstop" type="button" value="Stop" onClick="OnPtzMouseStop()"/>-->
+<input id="btnright" type="button" value="Right" onClick="OnPtzMouseRight()"/>
+</td>
+</tr>
+<tr>
+<td align="center"><input id="btndown" type="button" value="Down" onClick="OnPtzMouseDown()"></td>
+</tr>
+</table>
+</center>
+</body>
+</html>

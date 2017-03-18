@@ -1,0 +1,41 @@
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style>td{font-size:14px;color:#004080}</style>
+<title>ftp test</title>
+<script src="test_ftp.cgi"></script>
+<script src="get_status.cgi"></script>
+<script>document.title = opener.str_device+'('+alias+')';</script>
+</head>
+<body bgcolor="#d8d8d8"><strong><table border="0" cellpadding="0" cellspacing="0">
+<tr height="30"><td id="td_result"><script>document.write(opener.str_test);</script>&nbsp;&nbsp;...&nbsp;&nbsp;</td></tr>
+<tr><td id="td_reason"> </td></tr>
+</table></strong></body>
+<script>
+if (!result)
+{
+td_result.innerHTML=opener.str_test+'&nbsp;&nbsp;...&nbsp;&nbsp;'+opener.str_succeed;
+}
+else
+{
+td_result.innerHTML=opener.str_test+'&nbsp;&nbsp;...&nbsp;&nbsp;'+opener.str_failed;
+if (result==-1)
+td_reason.innerHTML=opener.str_ftp_error_connect;
+else if (result==-2)
+td_reason.innerHTML=opener.str_ftp_error_network;	
+else if (result==-3)
+td_reason.innerHTML=opener.str_ftp_error_server;		
+else if (result==-4)
+td_reason.innerHTML=opener.str_ftp_error_user;			
+else if (result==-5)
+td_reason.innerHTML=opener.str_ftp_error_pwd;
+else if (result==-6)
+td_reason.innerHTML=opener.str_ftp_error_dir;
+else if (result==-7)
+td_reason.innerHTML=opener.str_ftp_error_pasv;												
+else if (result==-8)
+td_reason.innerHTML=opener.str_ftp_error_port;													
+else if (result==-9)
+td_reason.innerHTML=opener.str_ftp_error_stor;														
+}
+</script>
+</html>

@@ -1,0 +1,229 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="get_record_file.cgi"></script>
+<script src="get_params.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="jquery/jquery-ui-1.8.18.custom.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="jquery/jquery-ui-1.8.18.custom.css" type="text/css">
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+
+
+top.goback_page = "recordplay.htm";
+
+var selected_filename;
+var selected_Index = 0;
+var selected_filelen = 0;
+
+var startSliding = false;
+function settingurl()
+{
+	if(top.cookiepri != 255) return;
+	location="config.htm";
+}
+
+function refresh_record_file()
+{
+	//alert(record_num0);
+	selectedIndex = 0;
+	$("#record_file_list").empty(); 
+	if (record_num0>0){
+		for(i=0;i<record_num0;i++)
+		{
+			$("#record_file_list").append("<option value='"+record_size0[i]+"'>"+record_name0[i]+"</option>");
+		}
+	}
+}
+
+$(function() {
+	
+	$( "#slider-range-pos" ).slider({
+	min: 1,
+	max: 255,
+	step: 1,
+	range: "min",
+	slide: function( event, ui ) {
+		//$( "#brightness" ).val( ui.value );
+	},
+	stop: function(event, ui) {//This event is triggered when the user stops sliding.
+		//alert(ui.value);
+		startSliding = false;
+		video.SdRecordFileSetPos(ui.value);
+	},
+	start: function(event, ui) {//This event is triggered when the user stops sliding.
+		startSliding = true;
+	}
+	});
+});
+
+ $(document).ready(function(){
+       
+            $("#button_xiazai").attr("title",str_xaizai);    
+            $("#button_del").attr("title",str_sd_shanchu);    
+
+    
+    });
+function body_onload()
+{ 
+	
+	video.SetFocus(1);
+	
+	$( "#slider-range-pos" ).slider( "option", "min", 0 );
+	$( "#slider-range-pos" ).slider( "option", "max", 12547 );
+	$( "#slider-range-pos" ).slider( "value" , 0 );
+	
+	
+	refresh_record_file();
+	get_recordfile();
+}
+function get_recordfile()
+{
+	var url = "get_record_file.cgi?loginuse="+top.cookieuser+"&loginpas="+top.cookiepass;
+	url += "&startdate=1&enddate=1";
+	url += "&"+(new Date-0);//alert(url);
+	$.getScript(url, function(){
+		refresh_record_file();
+	});
+}
+function enable_list()
+{
+	//$("#record_file_list").attr("disabled",false);
+}
+function record_file_onclick()
+{
+	selected_Index = $("#record_file_list")[0].selectedIndex;
+	selected_filelen = $("#record_file_list").val();
+	selected_filename = $("#record_file_list").find("option:selected").text();
+
+	$( "#slider-range-pos" ).slider( "option", "min", 0 );
+	$( "#slider-range-pos" ).slider( "option", "max", selected_filelen );
+	$( "#slider-range-pos" ).slider( "value" , 0 );
+	video.SdRecordFileStop();
+	video.SdRecordFilePlay(top.cookieuser,	top.cookiepass,	location.hostname, port ,selected_filename,3)
+}
+
+
+/////////////////////////////////////////////////////////2013.8.14新增的录像删除下载功能
+//单机后获取当前视频的vaule
+/*function onclick_record(){
+	selected_Index = $("#record_file_list")[0].selectedIndex; //单击后获取当前option的[0],数组
+	selected_filelen = $("#record_file_list").val(); //单击后获取当前option的val
+	selected_filename = $("#record_file_list").find("option:selected").text();  //单击后获取当前option的内容 
+	$("#dangqian").html(selected_filename);
+	//$("#del_value").html(selected_filelen);
+	//alert(selected_filename);
+}
+//单击下载按钮事件
+function button_xiazai_f(){
+	var url=$("#dangqian").html();
+	//alert(url);
+	var http_a="http://";
+	var localhost_a=location.host;
+	var record_a="/record/";
+	var xiazai_url=http_a+location.host+record_a+url;//获取录像文件地址
+	top.window.location.href=xiazai_url;
+}
+//单击删除按钮事件
+function button_del_f(){
+	var url=$("#dangqian").html();
+	var http_a="http://";
+	var localhost_a=location.host;
+	var record_a="/record/";
+	var del_url="/del_file.cgi?name="+url+"&loginuse="+top.cookieuser+"&loginpas="+top.cookiepass+"&next_url=recordplay.htm";//删除录像文件,并返回当前文件
+	var del_luxiang=http_a+location.host+del_url;
+	window.location.href=del_luxiang;
+}
+*/
+/////////////////////////////////////////
+
+function ipcam_MessageNotify(index,type,parame) 
+{
+	switch(type)
+	{
+		case 10:
+		{
+			if(!startSliding)
+				$( "#slider-range-pos" ).slider( "value" , parame );
+		}
+	}
+}
+
+function setup_onclick(){
+  window.location = "admin.htm";    //跳转后台管理链接
+}
+function index_on(){
+   top.window.location = "monitor.htm";    //跳转IE下播放录像理链接
+}
+</script>
+</head>
+<body onLoad="body_onload()">
+<SCRIPT FOR="video" EVENT="MessageNotify(type,parame)">ipcam_MessageNotify(this.name,type,parame)</SCRIPT>
+<table width="860" border="0" cellspacing="0" cellpadding="0" align="center" style=" margin-top:5px;">
+<tr>
+<td>
+<div style=" width: 818PX;   height:550px; border:1px solid #666">
+<table   cellspacing="0" cellpadding="0" >
+      <tr>
+        <td>
+        <table width="160" class="summaryTable">
+          <tr >
+            <td colspan="2" class="TitleBgcolor"><strong>
+              <script>document.write(str_record_info_fielist);</script>
+            </strong></td>
+          </tr>
+          <tr>
+            <td>
+            <h2><a href="javascript:index_on()">IP Camera</a></h2>
+            <SELECT id="record_file_list" style="width:160px;height:460px" size="28" onclick="onclick_record()" ondblclick="record_file_onclick()">
+          </SELECT></td>
+          </tr>
+          <tr height="25">
+            <td class="tCenter mid03" colspan="2" align="center"><button onClick="get_recordfile()">
+              <script>document.write(str_refresh);</script>
+            </button></td>
+          </tr>
+    </table>
+    </td>
+        <td width="640" height="520" align="center" style="vertical-align:middle ; ">
+        <table width="640" height="510" id="videoShow" style="background:#000000; text-align:center; vertical-align:middle;">
+          <tr>
+            <td style="text-align:center; vertical-align:middle;"><div name="ipcamdiv" id="ipcamdiv" align="center">
+              <OBJECT ID="video" name="0" width="640" height="480"  classid="clsid:91D47772-CF16-44B1-95C0-AE6C91284640">
+              </OBJECT>
+            </div>
+             <div style="width:640px; height:8px; vertical-align:bottom; margin-top:2px ; " id="slider-range-pos"></div>
+             
+          </td>
+          </tr>
+        </table>
+
+         <div id="bottom_f"  style="width:646px; height:36px;  background-image:url('images/bottom.jpg'); background-repeat:no-repeat; text-align:left">
+         <!--<table style=" background:none">
+         	<tr>
+            	<td><img class="cs" id="button_xiazai" onClick="button_xiazai_f()"  src="images/xiazai.png" />
+         			<img class="cs" onClick="button_del_f()" id="button_del"  src="images/shanchu.png" /></td>
+                <td><div style="color: #ACACAC; font-size:12px;" id="dangqian"></div> </td>
+            </tr>
+         
+         </table>-->
+         
+         
+         
+			
+         </div>
+   
+        </td>
+      </tr>
+  
+    </table>
+</div>
+</td>
+</tr>
+</table>
+</body>
+</html>
+<script type="text/javascript" src="rowscolor.js"></script>

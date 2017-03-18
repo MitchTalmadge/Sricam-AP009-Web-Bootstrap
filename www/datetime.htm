@@ -1,0 +1,159 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="login.cgi"></script>
+
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+if (alias=='') 
+alias=str_anonymous;
+else
+alias=decodeURI(alias);
+setDocTitle(str_device+'('+alias+')');
+function set_datetime()
+{
+	var url;
+	url='set_datetime.cgi?next_url=datetime.htm';
+	url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+	url+='&ntp_svr='+$("#ntp_svr_inp").val();
+	url+='&tz='+$("#tz_sel").val();
+	url+=($("#ntp_enable_chk").attr("checked")=="checked")?'&ntp_enable=1':'&ntp_enable=0';
+	//alert(url);
+	location=encodeURI(url);
+}
+
+function ntp_svr_onchange()
+{
+	var valueTemp=$("#ntp_svr_sel").val();
+	if (valueTemp=='...')
+	$("#ntp_svr_inp").show();
+	else
+	{
+	$("#ntp_svr_inp").val(valueTemp);
+	$("#ntp_svr_inp").hide();
+	}
+}
+function ntp_enable_onclick()
+{
+	if ($("#ntp_enable_chk").attr("checked")=="checked"){
+	$("#tr_ntp_svr").show();
+	ntp_svr_onchange();
+	}
+	else{
+	$("#tr_ntp_svr").hide();
+	$("#ntp_svr_inp").hide();
+	}
+}
+function set_syncwithpc()
+{
+	var url;
+	var now111=0;
+	
+	t=new Date();
+	$("#tz_sel").val(t.getTimezoneOffset()*60);
+	now111=t.getTime()/1000;
+	
+	url='set_datetime.cgi?next_url=datetime.htm';
+	url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+	url+='&ntp_svr='+$("#ntp_svr_inp").val();
+	url+='&tz='+$("#tz_sel").val();
+	url+=($("#ntp_enable_chk").attr("checked")=="checked")?'&ntp_enable=1':'&ntp_enable=0';
+	if (now111) url+='&now='+now111;
+	
+	//alert(url);
+	location=encodeURI(url);
+}
+function body_onload()
+{
+	var t=new Date();
+	t.setTime((1000*(now-tz)));
+	$("#now_td").html( "&nbsp;&nbsp;"+t.toUTCString());
+	
+	$("#tz_sel").val(tz);
+	$("#ntp_enable_chk").attr("checked",ntp_enable?true:false);
+	$("#ntp_svr_sel").val(ntp_svr);
+	if($("#ntp_svr_sel").val() !=ntp_svr ) 
+	$("#ntp_svr_sel").val("...");
+	$("#ntp_svr_inp").val(ntp_svr);
+	
+	ntp_enable_onclick();
+}
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong>
+<script>document.write(str_datetime_config);</script>
+</strong></td>
+</tr>
+<tr>
+<td width="30%" >&nbsp;&nbsp;
+<script>document.write(str_device_clock_time);</script></td>
+<td><div id="now_td" style="width:100%" ></div>
+</td>
+</tr>
+<tr>
+<td >&nbsp;&nbsp;
+<script>document.write(str_device_tz);</script></td>
+<td>&nbsp;&nbsp;
+<select id="tz_sel" style="width:350px;">
+<script>document.write(str_tz_list);</script>
+</select></td>
+</tr>
+<tr>
+<td >&nbsp;&nbsp;
+<script>document.write(str_ntp_choice);</script></td>
+<td>&nbsp;&nbsp;
+<input id="ntp_enable_chk" type="checkbox" onClick="ntp_enable_onclick()"></td>
+</tr>
+<tr id="tr_ntp_svr" style="display:none">
+<td >&nbsp;&nbsp;
+<script>document.write(str_ntp_server);</script></td>
+<td>&nbsp;&nbsp;
+<select id="ntp_svr_sel" onChange="ntp_svr_onchange()">
+<option value="time.nist.gov">time.nist.gov</option>
+<option value="time.kriss.re.kr">time.kriss.re.kr</option>
+<option value="time.windows.com">time.windows.com</option>
+<option value="time.nuri.net">time.nuri.net</option>
+<option value="...">...</option>
+</select>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<input id="ntp_svr_inp" style="display:none" maxlength="64"></td>
+</tr>
+<tr>
+<td >&nbsp;&nbsp;
+<!--<script>document.write(str_syncwithpc);</script></td>-->
+<td>&nbsp;&nbsp;
+<!--<input id="syncwithpc_enable" type="checkbox" onClick="set_syncwithpc();set_datetime();" />-->
+<button id="syncwithpc_enable" onClick="set_syncwithpc();"> <script>document.write(str_syncwithpc);</script> </button>
+</td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_datetime()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+
+
+
+<script>
+if(top.cookiepri != 255)  
+$("#set").hide();
+removeSelfClass();$("#dd-datetime", parent.document).addClass("selected");
+</script>
+</body>
+</html>
+<script type="text/javascript" src="rowscolor.js"></script>

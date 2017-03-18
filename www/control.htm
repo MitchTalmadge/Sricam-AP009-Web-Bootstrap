@@ -1,0 +1,131 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="style.css" type="text/css">
+<title></title>
+</head>
+<style>
+BODY {
+ font: arial;
+}
+</style>
+<script src="get_camera_params.cgi"></script>
+<script>
+var ptz_type=0;
+var TILT_UP=0;
+var PTZ_STOP=1;
+var TILT_UP_STOP=1;
+var TILT_DOWN=2;
+var TILT_DOWN_STOP=3;
+var PAN_LEFT=4;
+var PAN_LEFT_STOP=5;
+var PAN_RIGHT=6;
+var PAN_RIGHT_STOP = 7;
+var PTZ_CENTER=25;
+
+function decoder_control(command)
+{
+	action_zone.location='decoder_control.cgi?command='+command;
+}
+
+function up_onmousedown() 
+{
+	up.src=up_down.src;
+	if (flip&0x01)
+		decoder_control(TILT_DOWN);
+	else	
+		decoder_control(TILT_UP);
+}
+
+function up_onmouseup() 
+{
+	up.src=up_up.src;
+	if (!ptz_type)
+		decoder_control(PTZ_STOP);
+	else if (flip&0x01)
+		decoder_control(TILT_DOWN_STOP);
+	else	
+		decoder_control(TILT_UP_STOP);
+}
+
+function down_onmousedown() 
+{
+	down.src=down_down.src;
+	if (flip&0x01)
+		decoder_control(TILT_UP);
+	else
+		decoder_control(TILT_DOWN);
+}
+
+function down_onmouseup() 
+{
+	down.src=down_up.src;
+	if (!ptz_type)
+		decoder_control(PTZ_STOP);
+	else if (flip&0x01)
+		decoder_control(TILT_UP_STOP);
+	else
+		decoder_control(TILT_DOWN_STOP);	
+}
+
+function left_onmousedown() 
+{
+	left.src=left_down.src;
+	if (flip&0x02)
+		decoder_control(PAN_RIGHT);
+	else	
+		decoder_control(PAN_LEFT);
+}
+
+function left_onmouseup() 
+{
+	left.src=left_up.src;
+	if (!ptz_type)
+		decoder_control(PTZ_STOP);
+	else if (flip&0x02)
+		decoder_control(PAN_RIGHT_STOP);
+	else	
+		decoder_control(PAN_LEFT_STOP);	
+}
+
+function right_onmousedown() 
+{
+	right.src=right_down.src;
+	if (flip&0x02)
+		decoder_control(PAN_LEFT);
+	else	
+		decoder_control(PAN_RIGHT);
+}
+
+function right_onmouseup() 
+{
+	right.src=right_up.src;
+	if (!ptz_type)
+		decoder_control(PTZ_STOP);
+	else if (flip&0x02)
+		decoder_control(PAN_LEFT_STOP);
+	else	
+		decoder_control(PAN_RIGHT_STOP);
+}
+
+</script>
+<body>
+<div style="position:absolute;top: 0px;left:0px;"><img src="images/ptz.gif" ondragstart="return false"></div>
+<div id = "id_pos_up" style="position: absolute; top: 2px; left: 36px; cursor: hand"><img id="up" src="images/up_up.gif" ondragstart="return false" onmousedown="up_onmousedown()" onmouseup="up_onmouseup()"></div>
+<div id = "id_pos_down" style="position: absolute; top: 71px; left: 36px; cursor: hand"><img id="down" src="images/down_up.gif" ondragstart="return false" onmousedown="down_onmousedown()" onmouseup="down_onmouseup()"></div>
+<div id = "id_pos_left" style="position: absolute; top: 36px; left: 2px; cursor: hand"><img id="left" src="images/left_up.gif" ondragstart="return false" onmousedown="left_onmousedown()" onmouseup="left_onmouseup()"></div>
+<div id = "id_pos_right" style="position: absolute; top: 38px; left: 72px; cursor: hand"><img id="right" src="images/right_up.gif" ondragstart="return false" onmousedown="right_onmousedown()" onmouseup="right_onmouseup()"></div>
+<div id = "id_pos_center" style="position: absolute; top: 26px; left: 27px; cursor: hand"><img id="gocenter" src="images/center.gif" ondragstart="return false" onClick="if (!ptz_type) decoder_control(PTZ_CENTER)"></div>
+<img id="up_up" src="images/up_up.gif" class="ih">
+<img id="up_down" src="images/up_down.gif" class="ih">
+<img id="down_up" src="images/down_up.gif" class="ih">
+<img id="down_down" src="images/down_down.gif" class="ih">
+<img id="left_up" src="images/left_up.gif" class="ih">
+<img id="left_down" src="images/left_down.gif" class="ih">
+<img id="right_up" src="images/right_up.gif" class="ih">
+<img id="right_down" src="images/right_down.gif" class="ih"><iframe id="action_zone" name="action_zone" style="display:none"></iframe>
+
+</body>
+
+</html>

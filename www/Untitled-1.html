@@ -1,0 +1,116 @@
+
+
+<div style="position:absolute;top:0px;left:0px;width:813;height:562;"></div>
+<div style="position:absolute;top:0px;left:642px;width:171;height:480;background:url('images/main_right.jpg')"></div>
+<div style="position:absolute;top:480px;left:0px;width:813;height:82;background:url('images/main_bottom_h.jpg')"></div>
+<table width="813" height="562">
+		<td width = 642 height = 480 bgcolor = black align = left valign = top class="rect_left">
+	<iframe marginheight="0" marginwidth="0" width="640" height="480" frameborder="0" scrolling="no" name="main" src="live.htm"></iframe></td>
+	<td height=100% width=171 top = 0 class="pad1 rect_right bc2 v1">
+	</td>
+	<tr></tr>
+	<td width = 100% height= 82></td>
+</table>
+<div id = "" style="position: absolute; text-align:center; top: 20px; left: 
+659px; width:140px; height:30px; font-size:20px"><img src="images/logo.png">
+</div>
+
+<div id = "id_pos_up" style="position: absolute; top: 60px; left: 721px; cursor: hand"><img id="up" src="images/up_up.png" ondragstart="return false" onMouseDown="up_onmousedown()" onMouseUp="up_onmouseup()"></div>
+<div id = "id_pos_down" style="position: absolute; top: 133px; left: 721px; cursor: hand"><img id="down" src="images/down_up.png" ondragstart="return false" onMouseDown="down_onmousedown()" onMouseUp="down_onmouseup()"></div>
+<div id = "id_pos_left" style="position: absolute; top: 98px; left: 685px; cursor: hand"><img id="left" src="images/left_up.png" ondragstart="return false" onMouseDown="right_onmousedown()" onMouseUp="right_onmouseup()"></div>
+<div id = "id_pos_right" style="position: absolute; top: 98px; left: 759px; cursor: hand"><img id="right" src="images/right_up.png" ondragstart="return false" onMouseDown="left_onmousedown()" onMouseUp="left_onmouseup()"></div>
+<div id = "id_pos_center" style="position: absolute; top: 92px; left: 716px; cursor: hand"><img id="gocenter" src="images/conten.png" width="23px" height="23px"  ondragstart="return false" onClick="decoder_control(PTZ_CENTER)"></div>
+<div id = "id_pos_vpatrol" style="position: absolute; top: 149px; left: 678px; cursor: hand"><img src="images/vpatrol_up.gif" name="vpatrol" id="vpatrol" onClick="vpatrol_onclick()" ondragstart="return false"></div>
+<div id = "id_pos_hpatrol" style="position: absolute; top: 149px; left: 757px; cursor: hand"><img src="images/hpatrol_up.gif" name="hpatrol" id="hpatrol" onClick="hpatrol_onclick()" ondragstart="return false"></div>
+<div id = "id_pos_reversal" style="position: absolute; top: 175px; left: 699px; cursor: hand"><img src="images/reversal_up.gif" name="reversal" id="reversal" onClick="image_reversal_onclick()" ondragstart="return false" title="<script>document.write(str_reversal)</script>"/></div>
+<div id = "id_pos_mirror" style="position: absolute; top: 175px; left: 736px; cursor: hand"><img src="images/mirror_up.gif" name="mirror" id="mirror" onClick="image_mirror_onclick()" ondragstart="return false" title="<script>document.write(str_mirror)</script>"/></div>
+<div id = "id_pos_switchon" style="position: absolute; top: 202px; left: 699px; cursor: hand"><img src="images/switchon_up.gif" name="switchon" id="switchon" onClick="image_switchon_onclick()" ondragstart="return false" title="<script>document.write(str_switchon)</script>"/></div>
+<div id = "id_pos_switchoff" style="position: absolute; top: 202px; left: 736px; cursor: hand"><img src="images/switchoff_up.gif" name="switchoff" id="switchoff" onClick="image_switchoff_onclick()" ondragstart="return false" title="<script>document.write(str_switchoff)</script>"/></div>
+<div id = "id_pos_point" style="position: absolute; text-align:center;top: 275px; left: 662px; width:48px; height:14px;font-size:12px"><script>document.write(str_PresetTitle);</script></div>
+<div id = "id_pos_setup" style="position: absolute; top: 538px; left: 714px; cursor: hand"><img id="setup" src="images/setup_up.gif" width="23px" height="23px" ondragstart="return false" onClick="setup_onclick()" onMouseDown="this.src=setup_down.src" onMouseUp="this.src=setup_up.src" title="<script>document.write(str_setup)</script>"/></a></div>
+<div id = "id_pos_preset" style="position: absolute; top: 271px; left: 712px; cursor: hand; width:30px">
+	<select style="width:35; height:21" id="presetno">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+    <option value="9">9</option>
+    <option value="10">10</option>
+    <option value="11">11</option>
+    <option value="12">12</option>
+    <option value="13">13</option>
+    <option value="14">14</option>
+    <option value="15">15</option>
+    <option value="16">16</option>
+
+	</select></div>
+<div id = "id_pos_presetpoint" style="position: absolute; text-align:left; vertical-align:bottom;top: 268px; left: 750px; cursor: hand; width:42px; height:14px;font-size:11px;"><a href="javascript:preset_set();"><script>document.write(str_SetPreset);</script></a></div>
+<div id = "id_pos_callpoint" style="position: absolute; text-align:left;vertical-align:top;top: 285px; left: 750px; cursor: hand; width:42px; height:14px;font-size:11px;"><a href="javascript:preset_call();"><script>document.write(str_CallPreset);</script></a></div>
+<div id = "id_pos_res" style="position: absolute; text-align:center;top: 330px; left: 662px; width:53px; height:15px;font-size:12px"><script>document.write(str_resolution);</script></div>
+<div id = "id_pos_resolution" style="position: absolute; top: 328px; left: 718px; cursor: hand; width:72px">
+	<select style="width:72; height:21" id="resolution_sel" onChange="OnResolutionChanged(this.value)">
+    <option value="1">320*240</option>
+    <option value="0">640*480</option>
+	</select></div>
+<div id = "id_pos_mod" style="position: absolute; text-align:center;top: 354px; left: 662px; width:53px; height:14px;font-size:12px"><script>document.write(str_mode);</script></div>
+<div id = "id_pos_mode" style="position: absolute; top: 352px; left: 718px; cursor: hand; width:72px">
+	<select style="width:72; height:21" id="mode_sel" onChange="camera_control(3,this.value);">
+    <option value="0">50 HZ</option>
+    <option value="1">60 HZ</option>
+</select></div>
+<div id = "id_pos_bright" style="position: absolute; text-align:center;top: 383px; left: 662px; width:51px; height:14px;font-size:12px"><script>document.write(str_brightness);</script></div>
+<div id = "id_pos_plusbrightness" style="position: absolute; top: 382px; left: 716px; cursor: hand"><img src="images/plus_up.gif" name="plus_brightness" id="plus_brightness" onClick="plus_brightness_onclick()" onMouseDown="this.src=plus_down.src" onMouseUp="this.src=plus_up.src" ondragstart="return false" ></div>
+<div id = "id_pos_brightness" style="position: absolute; top: 379px; left: 738px; cursor: hand; width:27px">
+	<input id="brightness_input" readonly maxlength="2" class="s3" size="4"></div>
+<div id = "id_pos_minusbrightness" style="position: absolute; top: 382px; left: 769px; cursor: hand"><img src="images/minus_up.gif" name="minus_brightness" id="minus_brightness" onClick="minus_brightness_onclick()" onMouseDown="this.src=minus_down.src" onMouseUp="this.src=minus_up.src" ondragstart="return false" ></div>
+<div id = "id_pos_con" style="position: absolute;text-align:center; top: 403px; left: 662px; width:51px; height:14px;font-size:12px"><script>document.write(str_contrast);</script></div>
+<div id = "id_pos_pluscontrast" style="position: absolute; top: 402px; left: 716px; cursor: hand"><img src="images/plus_up.gif" name="plus_contrast" id="plus_contrast" onClick="plus_contrast_onclick()" onMouseDown="this.src=plus_down.src" onMouseUp="this.src=plus_up.src" ondragstart="return false" ></div>
+<div id = "id_pos_contrast" style="position: absolute; top: 401px; left: 737px; cursor: hand; width:28px">
+	<input id="contrast_input" readonly maxlength="2" class="s3" size="4"></div>
+<div id = "id_pos_minuscontrast" style="position: absolute; top: 404px; left: 769px; cursor: hand"><img src="images/minus_up.gif" name="minus_contrast" id="minus_contrast" onClick="minus_contrast_onclick()" onMouseDown="this.src=minus_down.src" onMouseUp="this.src=minus_up.src" ondragstart="return false" ></div>
+<div id = "id_pos_defaultall" style="position: absolute; text-align:center;top: 424px; left: 664px; cursor: hand; width:124px; height:14px;font-size:12px"><a href="javascript:default_all();"><script>document.write(str_default);</script></a></div>
+<div id = "id_pos_defaultall" style="position: absolute; text-align:center;top: 448px; left: 669px; cursor: hand; width:30px; height:14px;font-size:12px"><img id="snapshot" src="images/snapshot_up.gif" ondragstart="return false" onClick="snapshot_onclick()" onMouseDown="this.src=snapshot_down.src" onMouseUp="this.src=snapshot_up.src" /></div>
+<div id = "id_pos_date" style="position: absolute; text-align:left;top:496px;left:22px;width:120px;height:14px;"><span id="date_span" style="font-size:13px;color:yellow;"></span></div>
+<div id = "id_pos_time" style="position: absolute; text-align:left;top:496px;left:152px;width:120px;height:14px;"><span id="time_span" style="font-size:13px;color:yellow;"></span></div>
+<div id = "id_pos_alias"  style="position: absolute; text-align:left;top:513px;left:22px;width:310px;height:14px"><span id="alias_span" style="font-size:13px;color:yellow;"></span></div>
+<div id = "id_pos_host"  style="position: absolute; text-align:left;top:531px;left:22px;width:310px;height:14px"><span id="host_span" style="font-size:13px;color:yellow;"></span></div>
+
+<img id="up_up" src="images/up_up.png" class="ih">
+<img id="up_down" src="images/up_down.png" class="ih">
+<img id="down_up" src="images/down_up.png" class="ih">
+<img id="down_down" src="images/down_down.png" class="ih">
+<img id="left_up" src="images/left_up.png" class="ih">
+<img id="left_down" src="images/left_down.png" class="ih">
+<img id="right_up" src="images/right_up.png" class="ih">
+<img id="right_down" src="images/right_down.png" class="ih">
+<img id="vpatrol_up" src="images/vpatrol_up.gif" class="ih">
+<img id="vpatrol_down" src="images/vpatrol_down.gif" class="ih">
+<img id="hpatrol_up" src="images/hpatrol_up.gif" class="ih">
+<img id="hpatrol_down" src="images/hpatrol_down.gif" class="ih">
+<img id="reversal_up" src="images/reversal_up.gif" class="ih">
+<img id="reversal_down" src="images/reversal_down.gif" class="ih">
+<img id="switchon_up" src="images/switchon_up.gif" class="ih">
+<img id="switchon_down" src="images/switchon_down.gif" class="ih">
+<img id="switchoff_up" src="images/switchoff_up.gif" class="ih">
+<img id="switchoff_down" src="images/switchoff_down.gif" class="ih">
+<img id="mirror_up" src="images/mirror_up.gif" class="ih">
+<img id="mirror_down" src="images/mirror_down.gif" class="ih">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img id="setup_up" src="images/setup_up.gif" class="ih">
+<img id="setup_down" src="images/setup_down.gif" class="ih">&nbsp;&nbsp;
+<img id="zoomsub_up" src="images/zoomsub_up.gif" class="ih">
+<img id="zoomsub_down" src="images/zoomsub_down.gif" class="ih">
+<img id="zoomadd_up" src="images/zoomadd_up.gif" class="ih">
+<img id="zoomadd_down" src="images/zoomadd_down.gif" class="ih">
+<img id="plus_up" src="images/plus_up.gif" class="ih">
+<img id="plus_down" src="images/plus_down.gif" class="ih">
+<img id="snapshot_up" src="images/snapshot_up.gif" class="ih">
+<img id="snapshot_down" src="images/snapshot_down.gif" class="ih">
+<img id="minus_up" src="images/minus_up.gif" class="ih">
+<img id="minus_down" src="images/minus_down.gif" class="ih">&nbsp;&nbsp;&nbsp;<iframe id="action_zone" name="action_zone" style="display:none"></iframe>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title></title>
+</head>
+<script src="public.js"></script>
+<script src="check_user.cgi"></script>
+<script src="get_status.cgi"></script>
+<script>
+if (alias=='') alias=str_anonymous;
+document.title=str_device+'('+alias+')';
+var client_major=0;
+var client_minor=3;
+var browser=0;
+
+if(dev_had_sd)
+$("#tr_record_play").show();
+</script>
+<body  bgcolor="#425056">
+
+<iframe marginheight="0" marginwidth="0" width="100%" height="100%" frameborder="0" scrolling="no" src="login.htm"></iframe>
+
+</body>
+</html>

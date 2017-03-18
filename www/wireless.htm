@@ -1,0 +1,359 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="login.cgi"></script>
+<script src="get_status.cgi"></script>
+<script src="get_params.cgi"></script>
+<script src="get_wifi_scan_result.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+//if (alias=='') 
+//	alias=str_anonymous;
+//else
+//	alias=alias;
+//setDocTitle(str_device+'('+alias+')');
+function set_wireless()
+{
+	var url;
+	
+	url='set_wifi.cgi?next_url=rebootme.htm';
+	url+='&loginuse='+top.cookieuser+'&loginpas='+encodeURIComponent(top.cookiepass);
+	url+='&channel=5';
+	enable_p='&enable=0';
+	ssid_p='&ssid=';
+	mode_p='&mode=0';
+	encrypt_p='&encrypt=0';
+	authtype_p='&authtype=0';
+	keyformat_p='&keyformat=0';
+	defkey_p='&defkey=0';
+	key1_p='&key1=';
+	key2_p='&key2=';
+	key3_p='&key3=';
+	key4_p='&key4=';
+	key1_bits_p='&key1_bits=0';
+	key2_bits_p='&key2_bits=0';
+	key3_bits_p='&key3_bits=0';
+	key4_bits_p='&key4_bits=0';
+	wpa_psk_p='&wpa_psk=';
+	
+	if ($("#enable").attr("checked")=="checked")
+	{
+	enable_p='&enable=1';
+	ssid_p+=encodeURIComponent($("#ssid").val());
+	mode_p='&mode='+$("#networktype").val();
+	
+	authtype_p='&authtype='+$('#authtype')[0].selectedIndex;
+	if ($('#authtype')[0].selectedIndex==1)
+	{
+		encrypt_p='&encrypt='+$('#encrypt')[0].selectedIndex;
+		keyformat_p='&keyformat='+$('#keyformat')[0].selectedIndex;
+		defkey_p='&defkey='+$('#defkey')[0].selectedIndex;
+		key1_p+=encodeURIComponent($("#key1").val());
+		key2_p+=encodeURIComponent($("#key2").val());
+		key3_p+=encodeURIComponent($("#key3").val());
+		key4_p+=encodeURIComponent($("#key4").val());
+		key1_bits_p='&key1_bits='+$('#key1_bits')[0].selectedIndex;
+		key2_bits_p='&key2_bits='+$('#key2_bits')[0].selectedIndex;
+		key3_bits_p='&key3_bits='+$('#key3_bits')[0].selectedIndex;
+		key4_bits_p='&key4_bits='+$('#key4_bits')[0].selectedIndex;
+	}
+	else if ($('#authtype')[0].selectedIndex>1)
+	{
+	wpa_psk_p+=encodeURIComponent($("#wpa_psk").val());
+	}
+	}
+	url=url+enable_p+ssid_p+mode_p+encrypt_p+authtype_p+keyformat_p+defkey_p+key1_p+key2_p+key3_p+key4_p+key1_bits_p+key2_bits_p+key3_bits_p+key4_bits_p+wpa_psk_p;
+	
+	//url+='&wps_enable='+$("#wps_enable_select").val();
+	//url+='&wps_pin='+$("#wps_pin_input").val();
+	
+	//alert(url);
+	location=url;//(url);
+}
+
+
+function wifi_scan()
+{
+	wifi_scan_bu.disabled=true;
+	wifi_scan_info.innerHTML=str_wifi_scan_info;
+	location='wifi_scan.cgi?next_url=wireless.htm'+'&loginuse='+top.cookieuser+'&loginpas='+top.cookiepass;
+}
+
+function authtype_onchanged()
+{
+	($('#authtype')[0].selectedIndex==1)?$("#tr_encrypt").show():$("#tr_encrypt").hide();
+	($('#authtype')[0].selectedIndex==1)?$("#tr_defkey").show():$("#tr_defkey").hide();
+	($('#authtype')[0].selectedIndex==1)?$("#tr_keyformat").show():$("#tr_keyformat").hide();
+	($('#authtype')[0].selectedIndex==1)?$("#tr_key1").show():$("#tr_key1").hide();
+	($('#authtype')[0].selectedIndex==1)?$("#tr_key2").show():$("#tr_key2").hide();
+	($('#authtype')[0].selectedIndex==1)?$("#tr_key3").show():$("#tr_key3").hide();
+	($('#authtype')[0].selectedIndex==1)?$("#tr_key4").show():$("#tr_key4").hide();
+	($('#authtype')[0].selectedIndex>1)?$("#tr_wpa_psk").show():$("#tr_wpa_psk").hide();
+}
+function enable_onclick()
+{
+	($("#enable").attr("checked")=="checked")?$("#tr_ssid").show():$("#tr_ssid").hide();
+	($("#enable").attr("checked")=="checked")?$("#tr_networktype").show():$("#tr_networktype").hide();
+	($("#enable").attr("checked")=="checked")?$("#tr__authtype").show():$("#tr__authtype").hide();
+	
+	if (($("#enable").attr("checked")=="checked"))
+	{
+	authtype_onchanged();
+	}
+	else
+	{
+	$("#tr_encrypt").hide();
+	$("#tr_defkey").hide();
+	$("#tr_keyformat").hide();
+	$("#tr_key1").hide();
+	$("#tr_key2").hide();
+	$("#tr_key3").hide();
+	$("#tr_key4").hide();
+	$("#tr_wpa_psk").hide();
+	}
+}
+function body_onload()
+{
+	//wifi_scan_bu.disabled=false;
+	$("#wifi_scan_bu").attr("disabled",false)
+	
+	$("#enable").attr("checked",wifi_enable?true:false)
+	
+	$("#ssid").val(wifi_ssid);
+	$("#networktype").val(wifi_mode);
+	$("#key1").val(wifi_key1);
+	$("#key2").val(wifi_key2);
+	$("#key3").val(wifi_key3);
+	$("#key4").val(wifi_key4);
+	
+	
+	$('#encrypt')[0].selectedIndex = wifi_encrypt;
+	$('#authtype')[0].selectedIndex = wifi_authtype;
+	$('#defkey')[0].selectedIndex = wifi_defkey;
+	$('#keyformat')[0].selectedIndex = wifi_keyformat;
+	
+	$('#key1_bits')[0].selectedIndex = wifi_key1_bits;
+	$('#key2_bits')[0].selectedIndex = wifi_key2_bits;
+	$('#key3_bits')[0].selectedIndex = wifi_key3_bits;
+	$('#key4_bits')[0].selectedIndex = wifi_key4_bits;
+	
+	$("#wpa_psk").val(wifi_wpa_psk);
+	
+	for(i=0;i<ap_number;i++)
+	{
+	var sss = i+1;
+		var v = Math.floor(ap_dbm0[i]/10); 
+	if(v>5) v=5;
+	if(v==0) v=1;
+	var strImg = "images//signal"+v+".png";
+	$("#wifi_result").append("<tr style=\"cursor: hand\" onClick=\"wifi_list_onclick_a("+sss+")\"><td>"+ap_ssid[i]+"</td><td>"+ap_mac[i]+"</td><td width=\"80\"><img  border=\"0\" src=\""+strImg+"\"></td></tr>"); 
+	}
+	enable_onclick();
+}
+  
+function wifi_list_onclick_a(a)
+{
+	if(a == 0) return;
+	var i = a-1;
+	if(ap_security[i]==6) return;
+	$("#enable").attr("checked",true);
+	$("#ssid").val(ap_ssid[i]);
+	$("#networktype").val(ap_mode[i]);
+	$('#authtype')[0].selectedIndex = ap_security[i];
+	enable_onclick();
+	
+	$("#wpa_psk").val("");
+	
+	var _len = $('#wifi_result tr').size();
+	for(var i=1;i<_len;i++)
+	{
+		if(i != a)
+			$("#wifi_result tr").eq(i).removeClass("altrow1");
+		else
+			$("#wifi_result tr").eq(a).addClass("altrow1");
+	}
+}
+</script>
+</head>
+<body onLoad="body_onload()">
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center" >
+<tr>
+
+<td class="normal"><table width="100%" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_wireless_config);</script> 
+</strong></td>
+</tr>
+<tr id="tr_wifi_list" height="100">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_list);</script></td>
+<td><table id="wifi_result" class="selectTable" width="100%">
+<tr >
+<td>SSID</td>
+<td>MAC</td>
+<td width="80"></td>
+</tr>
+<!--<tr onClick="wifi_list_onclick_a(0);" onMouseOver="this.className+='altrow'" onMouseOut="this.className=this.className.replace('altrow','');">
+<td>SSID</td>
+<td>MAC</td>
+<td></td>
+</tr>-->
+</table>
+<!--<SELECT id="wifi_list" style="width:100%;" size="5" onclick="wifi_list_onclick()">
+</SELECT>-->
+<br>
+&nbsp;&nbsp;
+<button id="wifi_scan_bu" name="wifi_scan_bu" onClick="wifi_scan()"> 
+<!--<button id="wifi_scan_bu" name="wifi_scan_bu" onClick="CreateTable(20,1)">-->
+<script>document.write(str_scan);</script> 
+</button>
+&nbsp;&nbsp;<span id="wifi_scan_info" name="wifi_scan_info"></span></td>
+</tr>
+<tr>
+<td width="30%" class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_choice);</script></td>
+<td>&nbsp;&nbsp;
+<input id="enable" type="checkbox" onClick="enable_onclick()"></td>
+</tr>
+<tr id="tr_ssid">
+<td class="bc2">&nbsp;&nbsp;SSID</td>
+<td>&nbsp;&nbsp;
+<input id="ssid" maxlength="32"></td>
+</tr>
+<tr  id="tr_networktype">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_networktype);</script></td>
+<td>&nbsp;&nbsp;
+<select id="networktype" class="select1" >
+<option value="0">Infra</option>
+<option value="1">Adhoc</option>
+</select>
+</td>
+</tr>
+<tr id="tr__authtype">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_authtype);</script></td>
+<td>&nbsp;&nbsp;
+<select id="authtype" onChange="authtype_onchanged()">
+<option> 
+<script>document.write(str_none);</script> 
+</option>
+<option>WEP</option>
+<option>WPA-PSK Personal (AES)</option>
+<option>WPA-PSK Personal (TKIP)</option>
+<option>WPA2-PSK Personal (AES)</option>
+<option>WPA2-PSK Personal (TKIP)</option>
+</select></td>
+</tr>
+<tr id="tr_encrypt">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_encryption);</script></td>
+<td>&nbsp;&nbsp;
+<select id="encrypt">
+<option> 
+<script>document.write(str_auth_open);</script> 
+</option>
+<option> 
+<script>document.write(str_auth_share);</script> 
+</option>
+</select></td>
+</tr>
+<tr id="tr_keyformat">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_keytype);</script></td>
+<td>&nbsp;&nbsp;
+<select id="keyformat">
+<option> 
+<script>document.write(str_hex);</script> 
+</option>
+<option> 
+<script>document.write(str_ascii);</script> 
+</option>
+</select></td>
+</tr>
+<tr id="tr_defkey">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_wep_key_index);</script></td>
+<td>&nbsp;&nbsp;
+<select id="defkey">
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+</select></td>
+</tr>
+<tr id="tr_key1">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_wep_key1);</script></td>
+<td>&nbsp;&nbsp;
+<input id="key1" maxlength="26">
+&nbsp;&nbsp;
+<select id="key1_bits">
+<option>64 bits</option>
+<option>128 bits</option>
+</select></td>
+</tr>
+<tr id="tr_key2">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_wep_key2);</script></td>
+<td>&nbsp;&nbsp;
+<input id="key2" maxlength="26">
+&nbsp;&nbsp;
+<select id="key2_bits">
+<option>64 bits</option>
+<option>128 bits</option>
+</select></td>
+</tr>
+<tr id="tr_key3">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_wep_key3);</script></td>
+<td>&nbsp;&nbsp;
+<input id="key3" maxlength="26">
+&nbsp;&nbsp;
+<select id="key3_bits">
+<option>64 bits</option>
+<option>128 bits</option>
+</select></td>
+</tr>
+<tr id="tr_key4">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_wifi_wep_key4);</script></td>
+<td>&nbsp;&nbsp;
+<input id="key4" maxlength="26">
+&nbsp;&nbsp;
+<select id="key4_bits">
+<option>64 bits</option>
+<option>128 bits</option>
+</select></td>
+</tr>
+<tr id="tr_wpa_psk">
+<td class="bc2">&nbsp;&nbsp;<script>document.write(str_auth_share);</script></td>
+<td>&nbsp;&nbsp;
+<input id="wpa_psk" maxlength="64"></td>
+</tr>
+
+
+<!--<tr id="tr_wps">
+<td colspan="2" align="center" class="TitleBgcolor">&nbsp;&nbsp;<script>document.write(str_wps);</script></td>
+</tr>
+<tr id="tr_wps_1">
+<td>&nbsp;&nbsp;<script>document.write(str_wps);</script></td>
+<td>&nbsp;&nbsp;
+<select id="wps_enable_select" onChange="ChangWps()">
+<option value="0"><script>document.write(str_wps_1);</script></option>
+<option value="1">PBC</option>
+<option value="2">PIN</option>
+</select>&nbsp;&nbsp;
+<input id="wps_pin_input" maxlength="8">
+</td>
+</tr>-->
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="set_wireless()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-wireless", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>

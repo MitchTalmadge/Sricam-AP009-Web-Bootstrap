@@ -1,0 +1,130 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="get_status.cgi"></script>
+<script src="login.cgi"></script>
+<script type="text/javascript" src="jquery/jquery.min.js"></script>
+<script type="text/javascript" src="public.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css">
+<script>
+
+//注释record_TimeLen---//注释选择录象的时候以设置的时间为标准
+
+
+if (alias=='') 
+	alias=str_anonymous;
+else
+	alias=alias;
+setDocTitle(str_device+'('+alias+')');
+function body_onload()
+{
+$("#record_path").val(camsearch.RecFilePath);
+$("#selectpath").val(str_recpath_sel);
+
+
+$("#record_FileLen").val(camsearch.RecFileLen);
+//$("#record_TimeLen").val(camsearch.RecTimeLen);
+$("#record_reservedDiskSpace").val(camsearch.ReservedSpace);
+$("#rec_Cover").attr("checked",camsearch.RecCover?true:false);
+}
+function browseFolder(path)
+{
+camsearch.SetPath();
+$("#record_path").val(camsearch.RecFilePath);
+
+
+//location.reload();
+
+}
+function setPro()
+{
+	if($("#record_FileLen").val() == '') $("#record_FileLen").val(100);
+//	if($("#record_TimeLen").val() == '') $("#record_TimeLen").val(5);
+	if($("#record_reservedDiskSpace").val() == '') $("#record_reservedDiskSpace").val(200);
+	if($("#record_FileLen").val() > 1000)  $("#record_FileLen").val(100);
+//	if($("#record_TimeLen").val() > 120 ) $("#record_TimeLen").val(120);
+	
+	camsearch.SetRecordProperty($("#record_FileLen").val(),$("#record_TimeLen").val(),$("#record_reservedDiskSpace").val(),($("#rec_Cover").attr("checked")=="checked")?1:0);
+
+//	camsearch.SetRecordProperty($("#record_FileLen").$("#record_reservedDiskSpace").val(),($("#rec_Cover").attr("checked")=="checked")?1:0);
+	location.reload();
+}
+/*注释录象时间函数
+function check(obj)
+{
+	var number = obj.value.replace(/[^\d]/g,'');
+	var number2 = parseInt(number);
+	if(number2>=5 && number2<=119)
+	  return;
+	else
+	  obj.value = number.substring(0,1);
+}
+*/
+</script>
+</head>
+<body onLoad="body_onload()" >
+<table class="layout-grid-frame" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="normal"><table width="640" class="summaryTable">
+<tr>
+<td colspan="2" class="TitleBgcolor"><strong> 
+<script>document.write(str_record_path);</script> 
+</strong></td>
+</tr>
+<tr >
+<td width="30%">&nbsp;&nbsp; 
+<script>document.write(str_record_path2);</script></td>
+<td>&nbsp;&nbsp;
+<input id="record_path" size="48" readonly style="background:#CCC"/>
+<input type="button" onClick="browseFolder('record_path')" value="......" id='selectpath'/></td>
+</tr>
+<tr >
+<td width="30%">&nbsp;&nbsp; 
+<script>document.write(str_rec_FileLen);</script></td>
+<td>&nbsp;&nbsp;
+<input id="record_FileLen" maxlength="8" size="24" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"/>&nbsp;&nbsp; <script>document.write(str_rec_FileLen_1);</script></td>
+</tr>
+<!--//注释选择录象的时候以设置的时间为标准
+<tr>
+<td width="30%">&nbsp;&nbsp; 
+<script>document.write(str_rec_TimeLen);</script></td>
+<td>&nbsp;&nbsp;
+<input id="record_TimeLen" maxlength="8" size="24" onKeyUp="check(this)" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"/>&nbsp;&nbsp; <script>document.write(str_rec_TimeLen_1);</script></td>
+</tr>
+
+-->
+<td width="30%">&nbsp;&nbsp; 
+<script>document.write(str_rec_reservedDiskSpace);</script></td>
+<td>&nbsp;&nbsp;
+<input id="record_reservedDiskSpace"maxlength="8" size="24" onKeyUp="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"/>&nbsp;&nbsp; <script>document.write(str_rec_reservedDiskSpace_1);</script></td>
+</tr>
+<td width="30%">&nbsp;&nbsp; 
+<script>document.write(str_rec_Cover);</script></td>
+<td>&nbsp;&nbsp;
+<input type="checkbox" name="checkbox" id="rec_Cover">
+</td>
+</tr>
+</table>
+<script>document.write(str_record_note);</script></td>
+</td>
+</tr>
+</table>
+<br>
+<div class="sendbtnstyle">
+<button id="set" onClick="setPro()"> <script>document.write(str_set);</script> </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="reload" onClick="location.reload()"> <script>document.write(str_refresh);</script> </button>
+</div></td>
+</tr>
+</table>
+<OBJECT id="camsearch" height="0" width="0" classid="clsid:91D47772-CF16-44B1-95C0-AE6C91284640">
+</OBJECT>
+</body>
+</html>
+<script>
+removeSelfClass();$("#dd-recordpath", parent.document).addClass("selected");
+if(top.cookiepri != 255)  
+$("#set").hide();
+</script>
+<script type="text/javascript" src="rowscolor.js"></script>
