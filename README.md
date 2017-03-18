@@ -10,6 +10,8 @@ This project was created to turn the ugly web interface that comes standard on t
  
 I can't guarantee that this will work for any other Sricam devices, and I wouldn't try it. (Feel free to do so yourself, but don't hold me accountable if you screw up your camera.)
  
+---
+ 
 ### How does it work?
 
 The Sricam AP009 uses firmware that is nearly identical to that of the **vstarcam** camera line. With the help of some blog posts on the internet, I was able to deconstruct the upgrade file format and re-build it automatically, containing custom web files. 
@@ -38,13 +40,19 @@ This repository uses npm to generate an update file from the contents of the rep
 
 I was able to get the original files from the camera by connecting via telnet with the username **root** and the password **123456**. Then, I used the ftp binary at `/system/system/bin/ftp` to download the contents of `/system/www` to my computer.
 
+---
+
 ### Cloning:
 
 This project was built for **WebStorm**. You should probably use that IDE.
 
+---
+
 ### Building:
 
 You can build everything using the command `npm run build`. The resulting update will be placed in `/dist/`. Make sure to run `npm install` beforehand to get the required dependencies.
+
+---
 
 ### Credit where it's due:
 
