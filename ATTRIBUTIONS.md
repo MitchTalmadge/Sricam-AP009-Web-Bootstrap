@@ -15,6 +15,14 @@ https://github.com/rf00/minizip-asm.js/blob/master/LICENSE
 
 https://github.com/isaacs/rimraf/blob/master/LICENSE
 
-### concat-stream
+### TypeScript
 
-https://github.com/maxogden/concat-stream/blob/master/LICENSE
+https://github.com/Microsoft/TypeScript/blob/master/LICENSE.txt
+
+### DefinitelyTyped
+
+https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/LICENSE
+
+### core-js
+
+https://github.com/zloirock/core-js/blob/master/LICENSE
