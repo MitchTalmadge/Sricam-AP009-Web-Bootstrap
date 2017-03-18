@@ -19,8 +19,7 @@ config.output = {
 config.plugins.push(
     new HtmlWebpackPlugin({
         template: path.join(__dirname, '../src/app.htm.ejs'),
-        favicon: path.join(__dirname, '../src/resources/favicons/favicon.ico'),
-        filename: path.join(__dirname, '../www/index.html'),
+        filename: 'app.htm',
         inject: 'body',
         minify: {
             minifyCSS: true,
@@ -30,6 +29,18 @@ config.plugins.push(
             collapseInlineTagWhitespace: true
         },
         chunksSortMode: 'dependency'
+    }),
+    new HtmlWebpackPlugin({
+        template: path.join(__dirname, '../src/index.htm.ejs'),
+        favicon: path.join(__dirname, '../src/resources/favicons/favicon.ico'),
+        filename: 'index.htm',
+        minify: {
+            minifyCSS: true,
+            minifyJS: true,
+            removeComments: true,
+            collapseWhitespace: true,
+            collapseInlineTagWhitespace: true
+        }
     })
 );
 
