@@ -2,14 +2,9 @@
 
 https://github.com/twbs/bootstrap/blob/master/LICENSE
 
-### node-glob
+### node-archiver
 
-https://github.com/isaacs/node-glob/blob/master/LICENSE
-
-### minizip-asm.js
-
-https://github.com/rf00/minizip-asm.js/blob/master/LICENSE 
-(http://www.zlib.net/zlib_license.html)
+https://github.com/archiverjs/node-archiver/blob/master/LICENSE
 
 ### rimraf
 

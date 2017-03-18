@@ -1,76 +1,87 @@
 const head = "wifi-camera-app-qazwsxedcrfvtgba";
 const tail = "wifi-camera-end-yhnujmzaqxswcdef";
-const password = "vstarcam!@#$%";
 
-const wwwDir = "./www/";
-const tmpDir = "./tmp/";
 const distDir = "./dist/";
-
-const updateZip = tmpDir + 'update.zip';
 const finalUpdateFile = distDir + 'update.bin';
 
 const fs = require('fs');
+const archiver = require('archiver');
 const rimraf = require('rimraf');
-const glob = require('glob');
 
-const Minizip = require('minizip-asm.js');
-let mz = new Minizip();
+/**
+ * Main entry point to the build script.
+ */
+function main() {
+    cleanDirectories();
 
-console.log("Removing old directories");
+    writeZipToBuffer(buffer => {
+        writeUpdateFile(buffer);
+        console.log("Complete!");
+    });
+}
 
-// Remove and create tmp and dist folders
-rimraf.sync(tmpDir);
-fs.mkdirSync(tmpDir);
-rimraf.sync(distDir);
-fs.mkdirSync(distDir);
+/**
+ * Removes and re-creates the needed output directories.
+ */
+function cleanDirectories(): void {
+    console.log("Removing old directories");
+    rimraf.sync(distDir);
+    fs.mkdirSync(distDir);
+}
 
-console.log("Adding files to zip");
+/**
+ * Writes the contents of the 'www/' directory to a buffer.
+ * The callback method is called when the writing is completed, and the buffer is given as a parameter.
+ * @param callback The method to call when writing is completed.
+ */
+function writeZipToBuffer(callback: Function) {
+    console.log("Adding files to zip");
+    let archive = archiver('zip');
+    let dataArray: Buffer[] = [];
 
-// Get a list of all the files to add
-let files = glob.sync("www/**", {
-    'nodir': true
-});
+    archive.on('data', (data: Buffer) => {
+        dataArray.push(data);
+    });
 
-// For each of the files, add to the zip
-files.forEach(function (file) {
-    console.log("\tAdding " + file);
-    mz.append(file, fs.readFileSync(file));
-});
+    archive.on('end', () => {
+        let buffer = Buffer.concat(dataArray);
+        callback.call(this, buffer);
+    });
 
+    archive.glob('www/**');
+    archive.finalize();
+}
 
-console.log("Writing zip file");
+/**
+ * Writes the head, zipBuffer (and size), and tail to the update file in /dist.
+ * @param zipBuffer The buffer containing the zip file.
+ */
+function writeUpdateFile(zipBuffer: Buffer) {
+    console.log("Writing update to " + finalUpdateFile);
+    let updateFileStream = fs.createWriteStream(finalUpdateFile);
 
-// Create the zip file
-fs.writeFileSync(updateZip, new Buffer(mz.zip()));
+    // Head
+    console.log("\tAppending Head");
+    updateFileStream.write(head);
 
-console.log("Zip File written to " + updateZip);
+    // Size
+    console.log("\tAppending Size");
+    let updateSize = zipBuffer.length;
+    console.log("\t - Size of zip: " + updateSize + " bytes");
+    let updateSizeBuffer = new Buffer(4);
+    updateSizeBuffer.writeUInt32LE(updateSize, 0);
+    console.log("\t - Size as hex: " + updateSizeBuffer.toString('hex'));
+    updateFileStream.write(updateSizeBuffer, "hex");
 
-console.log("\tWriting update to " + finalUpdateFile);
-let updateFileStream = fs.createWriteStream(finalUpdateFile);
+    // Zip
+    console.log("\tAppending Zip File");
+    updateFileStream.write(zipBuffer, "hex");
 
-// Head
-console.log("\tAppending Head");
-updateFileStream.write(head);
+    // Tail
+    console.log("\tAppending Tail");
+    updateFileStream.write(tail);
 
-let zipBuffer = new Buffer(mz.zip());
+    updateFileStream.end();
+}
 
-// Size
-console.log("\tAppending Size");
-let updateSize = zipBuffer.length;
-console.log("\t - Size of zip: " + updateSize);
-let updateSizeBuffer = new Buffer(4);
-updateSizeBuffer.writeUInt32LE(updateSize, 0);
-console.log("\t - Size as hex: " + updateSizeBuffer.toString('hex'));
-updateFileStream.write(updateSizeBuffer, "hex");
-
-// Zip
-console.log("\tAppending Zip File");
-updateFileStream.write(zipBuffer, "hex");
-
-// Tail
-console.log("\tAppending Tail");
-updateFileStream.write(tail);
-
-updateFileStream.end();
-
-console.log("Complete!");
+main();
