@@ -1,3 +1,5 @@
+> Update: I never was able to finish this project due to space limitations of the camera's internal memory. I have uploaded the original web firmware to /www for archival purposes.
+
 # Sricam AP009 Web Bootstrap 
 
 **The Sricam AP009 Web interface, redesigned in Bootstrap**
